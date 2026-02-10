@@ -69,16 +69,21 @@ class AccountEntity {
     @Column(name = 'MUTETIME')
     private Long mutedUntil
 
+    /** Locale Id.
+     *  @see com.woodlands.yanp.common.constants.LocalizationId */
     @JsonProperty
     @Column(name = 'LOCALE')
-    private String locale
+    private String localeId
 
+    /** 2-Factor auth token */
     @Column(name = 'TOKEN')
     private String token
 
+    /** Operating System, e.g. Win/Mac */
     @Column(name = 'OS')
     private String os
 
+    /** Platform, e.g. x86 */
     @Column(name = 'PLATFORM')
     private String platform
 

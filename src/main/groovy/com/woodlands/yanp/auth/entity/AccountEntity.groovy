@@ -27,7 +27,7 @@ class AccountEntity {
     /** Access level of account 0 = regular user, > 0 = GM. */
     @JsonProperty
     @Column(name = 'GMLEVEL')
-    private Byte gmLevel
+    private Integer gmLevel
 
     /** The session key. */
     @Column(name = 'SESSIONKEY')
@@ -56,17 +56,18 @@ class AccountEntity {
     private Long failedLogins
 
     @Column(name = 'LOCKED')
-    private Byte locked
+    private Boolean locked
     
     @Column(name = 'ACTIVE_REALM_ID')
     private Long activeRealmId
 
     @JsonProperty
     @Column(name = 'EXPANSION')
-    private Byte expansion
+    private Integer expansion
 
+    /** Unix time when an account will become unmuted */
     @Column(name = 'MUTETIME')
-    private Long muteTime
+    private Long mutedUntil
 
     @JsonProperty
     @Column(name = 'LOCALE')

@@ -1,6 +1,6 @@
 package com.woodlands.yanp.auth.entity
 
-
+import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -11,206 +11,78 @@ import jakarta.persistence.Table
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "account", schema = 'tbcrealmd', catalog = 'tbcrealmd')
+@Table(name = 'account', schema = 'tbcrealmd', catalog = 'tbcrealmd')
 class AccountEntity {
 
+    @JsonProperty
     @Id
-    @Column(name = "ID", nullable = false)
+    @Column(name = 'ID', nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id
 
-    /** The user name. */
-    @Column(name = "USERNAME", length = 32, unique = true)
+    @JsonProperty
+    @Column(name = 'USERNAME', length = 32, unique = true)
     private String username
 
     /** Access level of account 0 = regular user, > 0 = GM. */
-    @Column(name = "GMLEVEL")
+    @JsonProperty
+    @Column(name = 'GMLEVEL')
     private Byte gmLevel
 
     /** The session key. */
-    @Column(name = "SESSIONKEY")
+    @Column(name = 'SESSIONKEY')
     private String sessionKey
 
     /** The v. */
-    @Column(name = "V", nullable = false)
+    @Column(name = 'V', nullable = false)
     private String v
 
     /** The s. */
-    @Column(name = "S", nullable = false)
+    @Column(name = 'S', nullable = false)
     private String s
 
-    @Column(name = "EMAIL")
+    @JsonProperty
+    @Column(name = 'EMAIL')
     private String email
 
-    @Column(name = "JOINDATE")
+    @JsonProperty
+    @Column(name = 'JOINDATE')
     private LocalDateTime joinDate
 
-    @Column(name = "LOCKEDIP", length = 30)
+    @Column(name = 'LOCKEDIP', length = 30)
     private String lockedIp
 
-    @Column(name = "FAILED_LOGINS")
+    @Column(name = 'FAILED_LOGINS')
     private Long failedLogins
 
-    /** Account activated. */
-    @Column(name = "LOCKED")
+    @Column(name = 'LOCKED')
     private Byte locked
-
-    @Column(name = "LAST_LOGIN")
-    private Calendar lastLogin
-
-    @Column(name = "ACTIVE_REALM_ID")
+    
+    @Column(name = 'ACTIVE_REALM_ID')
     private Long activeRealmId
 
-    @Column(name = "EXPANSION")
+    @JsonProperty
+    @Column(name = 'EXPANSION')
     private Byte expansion
 
-    @Column(name = "MUTETIME")
+    @Column(name = 'MUTETIME')
     private Long muteTime
 
-    @Column(name = "LOCALE")
-    private Byte locale
+    @JsonProperty
+    @Column(name = 'LOCALE')
+    private String locale
 
-    @Column(name = "LAST_SERVER")
-    private Byte lastServer
+    @Column(name = 'TOKEN')
+    private String token
 
-    // TODO token, os, platform, flags in CMangos
+    @Column(name = 'OS')
+    private String os
 
-    Long getId() {
-        return this.id
-    }
+    @Column(name = 'PLATFORM')
+    private String platform
 
-    void setId(final Long id) {
-        this.id = id
-    }
-
-    String getUsername() {
-        return this.username
-    }
-
-    void setUsername(final String username) {
-        this.username = username
-    }
-
-    Byte getGMLevel() {
-        return this.gmLevel
-    }
-
-    void setGMLevel(final Byte gmlevel) {
-        this.gmLevel = gmlevel
-    }
-
-    String getSessionKey() {
-        return this.sessionKey
-    }
-
-    void setSessionKey(final String sessionKey) {
-        this.sessionKey = sessionKey
-    }
-
-    String getV() {
-        return this.v
-    }
-
-    void setV(final String v) {
-        this.v = v
-    }
-
-    String getS() {
-        return this.s
-    }
-
-    void setS(final String s) {
-        this.s = s
-    }
-
-    String getEmail() {
-        return this.email
-    }
-
-    void setEmail(final String email) {
-        this.email = email
-    }
-
-    LocalDateTime getJoinDate() {
-        return this.joinDate
-    }
-
-    void setJoinDate(final LocalDateTime joinDate) {
-        this.joinDate = joinDate
-    }
-
-    String getLastIp() {
-        return this.lockedIp
-    }
-
-    void setLastIp(final String lastIp) {
-        this.lockedIp = lastIp
-    }
-
-    Long getFailedLogins() {
-        return this.failedLogins
-    }
-
-    void setFailedLogins(final Long failedLogins) {
-        this.failedLogins = failedLogins
-    }
-
-    Byte getLocked() {
-        return this.locked
-    }
-
-    void setLocked(final Byte locked) {
-        this.locked = locked
-    }
-
-    Calendar getLastLogin() {
-        return this.lastLogin
-    }
-
-    void setLastLogin(final Calendar lastLogin) {
-        this.lastLogin = lastLogin
-    }
-
-    Long getActiveRealmId() {
-        return this.activeRealmId
-    }
-
-    void setActiveRealmId(final Long activeRealmId) {
-        this.activeRealmId = activeRealmId
-    }
-
-    Byte getExpansion() {
-        return this.expansion
-    }
-
-    void setExpansion(final Byte expansion) {
-        this.expansion = expansion
-    }
-
-    Long getMuteTime() {
-        return this.muteTime
-    }
-
-    void setMuteTime(final Long muteTime) {
-        this.muteTime = muteTime
-    }
-
-    Byte getLocale() {
-        return this.locale
-    }
-
-    void setLocale(final Byte locale) {
-        this.locale = locale
-    }
-
-    Byte getLastServer() {
-
-        return this.lastServer
-    }
-
-    void setLastServer(final Byte lastServer) {
-        this.lastServer = lastServer
-    }
+    @Column(name = 'flags')
+    private Integer flags
 
     @Override
     int hashCode() {

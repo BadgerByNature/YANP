@@ -2,6 +2,9 @@ package com.woodlands.yanp.common.constants
 
 import java.util.stream.Stream
 
+/**
+ * Names for localization Ids.
+ */
 enum LocalizationId {
     ENGLISH(0),
     KOREAN(1),
@@ -9,8 +12,8 @@ enum LocalizationId {
     GERMAN(3),
     CHINESE(4),
     TAIWANESE(5),
-    SPANISH(6),
-    MEXICO(7),
+    SPANISH_CASTILIAN(6),
+    SPANISH_LATIN(7),
     RUSSIAN(8)
 
     int id

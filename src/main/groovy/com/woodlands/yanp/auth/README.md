@@ -1,0 +1,1 @@
+Classes used primarily for authorization activities, such as logging in to the realm server (not the game server) or modifying your account via the website

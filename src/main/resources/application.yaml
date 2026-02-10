@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: YANP
+  datasource:
+    url: 'jdbc:mariadb://localhost:3310/'
+    username: root
+    password: 123456
+server:
+  port: 8081

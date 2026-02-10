@@ -9,7 +9,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 
 @Entity
-@Table(name = "realmlist", schema = 'tbcrealmd', catalog = 'tbcrealmd')
+@Table(name = "realmlist", catalog = 'tbcrealmd')
 class RealmEntity {
 
     @JsonProperty

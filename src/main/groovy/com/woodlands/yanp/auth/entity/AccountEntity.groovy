@@ -11,7 +11,7 @@ import jakarta.persistence.Table
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = 'account', schema = 'tbcrealmd', catalog = 'tbcrealmd')
+@Table(name = 'account', catalog = 'tbcrealmd')
 class AccountEntity {
 
     @JsonProperty

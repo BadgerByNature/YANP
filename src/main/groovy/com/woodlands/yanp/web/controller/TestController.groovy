@@ -5,6 +5,7 @@ import com.woodlands.yanp.auth.entity.RealmEntity
 import com.woodlands.yanp.auth.repository.AccountRepository
 import com.woodlands.yanp.auth.repository.RealmRepository
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -29,7 +30,7 @@ class TestController {
     }
 
     @GetMapping('account/{id}')
-    AccountEntity getAccountById(long id) {
+    AccountEntity getAccountById(@PathVariable('id') long id) {
         accountRepository.findById(id).orElseGet { null }
     }
 }

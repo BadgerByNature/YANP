@@ -1,5 +1,6 @@
 package com.woodlands.yanp.auth
 
+import com.woodlands.yanp.auth.decode.AuthDecoder
 import groovy.util.logging.Slf4j
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.buffer.PooledByteBufAllocator
@@ -29,9 +30,6 @@ class AuthServer {
     @Value('${auth.port:3724}')
     int port
 
-    @Autowired
-    AuthChannelInboundHandler authInboundHandler
-
     private static final EventLoopGroup bossGroup = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory())
     private static final EventLoopGroup workerGroup = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory())
 
@@ -46,6 +44,7 @@ class AuthServer {
                 protected void initChannel(Channel ch) throws Exception {
                     // Create a new AuthChannelInboundHandler here instead of autowiring
                     // So that we can maintain state per Channel, e.g. account name and login status
+                    ch.pipeline().addLast("decoder", new AuthDecoder())
                     ch.pipeline().addLast(new AuthChannelInboundHandler())
                 }
             })

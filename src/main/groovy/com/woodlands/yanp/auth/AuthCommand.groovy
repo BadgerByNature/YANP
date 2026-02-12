@@ -8,7 +8,7 @@ enum AuthCommand {
     CMD_AUTH_RECONNECT_PROOF(0x03),
     CMD_REALM_LIST(0x10),
     CMD_XFER_INITIATE(0x30),
-    CMD_XFER_DATA(0x31),
+    CMD_XFER_DATA(0x31)
 
     // According to vMangos and CMangos the codes below are not in the supported clients
 //    CMD_XFER_ACCEPT(0x32),
@@ -27,6 +27,6 @@ enum AuthCommand {
                 return command
             }
         }
-        throw new IllegalArgumentException("Invalid AuthCommand")
+        throw new IllegalArgumentException("Invalid AuthCommand: ${Integer.toHexString(code)}")
     }
 }

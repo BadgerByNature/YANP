@@ -1,6 +1,7 @@
 package com.woodlands.yanp.auth
 
 import com.woodlands.yanp.auth.decode.AuthByteToMessageDecoderService
+import com.woodlands.yanp.auth.encode.AuthResponseEncoder
 import groovy.util.logging.Slf4j
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.buffer.PooledByteBufAllocator
@@ -28,15 +29,18 @@ class AuthServer {
 
     private final AuthByteToMessageDecoderService authDecoderService
     private final AuthChannelInboundHandler authChannelInboundHandler
+    private final AuthResponseEncoder authResponseEncoder
     final int port
 
     AuthServer(
             AuthByteToMessageDecoderService authDecoderService,
             AuthChannelInboundHandler authChannelInboundHandler,
+            AuthResponseEncoder authResponseEncoder,
             @Value('${auth.port:3724}') int port // If we load our config differently we could use the @TupleConstructor for less code here
     ) {
         this.authDecoderService = authDecoderService
         this.authChannelInboundHandler = authChannelInboundHandler
+        this.authResponseEncoder = authResponseEncoder
         this.port = port
     }
 
@@ -56,6 +60,7 @@ class AuthServer {
                     // So that we can maintain state per Channel, e.g. account name and login status
                     ch.pipeline().addLast("decoder", authDecoderService)
                     ch.pipeline().addLast(authChannelInboundHandler)
+                    ch.pipeline().addLast("encoder", authResponseEncoder)
                 }
             })
             // Options for the parent ServerChannel, where we listen for incoming connections

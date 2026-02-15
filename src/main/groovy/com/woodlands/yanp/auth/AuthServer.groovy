@@ -1,6 +1,6 @@
 package com.woodlands.yanp.auth
 
-import com.woodlands.yanp.auth.decode.AuthDecoder
+import com.woodlands.yanp.auth.decode.AuthByteToMessageDecoderService
 import groovy.util.logging.Slf4j
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.buffer.PooledByteBufAllocator
@@ -14,7 +14,6 @@ import io.netty.channel.nio.NioIoHandler
 import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.util.NetUtil
 import jakarta.annotation.PostConstruct
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
@@ -27,6 +26,16 @@ import org.springframework.stereotype.Service
 @Service
 class AuthServer {
 
+    private final AuthByteToMessageDecoderService authDecoderService
+    private final AuthChannelInboundHandler authChannelInboundHandler
+
+    AuthServer(
+            AuthByteToMessageDecoderService authDecoderService,
+            AuthChannelInboundHandler authChannelInboundHandler
+    ) {
+        this.authDecoderService = authDecoderService
+        this.authChannelInboundHandler = authChannelInboundHandler
+    }
     @Value('${auth.port:3724}')
     int port
 
@@ -44,8 +53,8 @@ class AuthServer {
                 protected void initChannel(Channel ch) throws Exception {
                     // Create a new AuthChannelInboundHandler here instead of autowiring
                     // So that we can maintain state per Channel, e.g. account name and login status
-                    ch.pipeline().addLast("decoder", new AuthDecoder())
-                    ch.pipeline().addLast(new AuthChannelInboundHandler())
+                    ch.pipeline().addLast("decoder", authDecoderService)
+                    ch.pipeline().addLast(authChannelInboundHandler)
                 }
             })
             // Options for the parent ServerChannel, where we listen for incoming connections

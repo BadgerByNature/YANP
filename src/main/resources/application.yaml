@@ -10,6 +10,10 @@ auth:
 io:
   netty:
     leakDetection:
-      level: advanced
+      level: paranoid # TODO Turn this back down to advanced or simple after some testing
+logging:
+  level:
+    com.woodlands.yanp: DEBUG
+    root: INFO
 server:
-  port: 8081
+  port: 8081 # WebServer port

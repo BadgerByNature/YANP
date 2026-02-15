@@ -1,16 +1,26 @@
 package com.woodlands.yanp.auth
 
 import com.woodlands.yanp.auth.message.AuthMessage
+import com.woodlands.yanp.auth.message.handler.AuthMessageHandler
 import groovy.util.logging.Slf4j
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
+import org.springframework.stereotype.Service
 
 /**
  * The primary handler invoked from connections made to the AuthServer
  */
 @Slf4j
+@Service
 class AuthChannelInboundHandler extends ChannelInboundHandlerAdapter {
+
+
+    List<AuthMessageHandler> authMessageHandlers
+
+    AuthChannelInboundHandler(List<AuthMessageHandler> authMessageHandlers) {
+        this.authMessageHandlers = authMessageHandlers
+    }
 
     @Override
     void channelRegistered(ChannelHandlerContext ctx) throws Exception {
@@ -26,12 +36,12 @@ class AuthChannelInboundHandler extends ChannelInboundHandlerAdapter {
     @Override
     void channelRead(ChannelHandlerContext ctx, Object msg) {
         if (msg instanceof AuthMessage) {
-//            new LoginRequestMessageHandler().handle(
-//                    (AuthMessage)msg, ctx.channel()
-//            )
-        } else if (msg instanceof ByteBuf) {
-            ((ByteBuf) msg).release()
+            var handler = authMessageHandlers.find {
+                it.handles(msg)
+            }
+            handler.handle(msg, ctx.channel())
         }
+        // TODO Do we need to release the underlying ByteBuf at this point? At any point?
     }
 
     @Override

@@ -6,7 +6,7 @@ spring:
     username: root
     password: 123456
 auth:
-  port: 37244
+  port: 3724
 io:
   netty:
     leakDetection:

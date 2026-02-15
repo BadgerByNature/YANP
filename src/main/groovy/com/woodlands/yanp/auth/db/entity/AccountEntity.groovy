@@ -1,4 +1,4 @@
-package com.woodlands.yanp.auth.entity
+package com.woodlands.yanp.auth.db.entity
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.persistence.Column

@@ -7,5 +7,9 @@ spring:
     password: 123456
 auth:
   port: 37244
+io:
+  netty:
+    leakDetection:
+      level: advanced
 server:
   port: 8081

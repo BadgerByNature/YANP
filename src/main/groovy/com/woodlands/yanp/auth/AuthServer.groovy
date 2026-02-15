@@ -28,16 +28,17 @@ class AuthServer {
 
     private final AuthByteToMessageDecoderService authDecoderService
     private final AuthChannelInboundHandler authChannelInboundHandler
+    final int port
 
     AuthServer(
             AuthByteToMessageDecoderService authDecoderService,
-            AuthChannelInboundHandler authChannelInboundHandler
+            AuthChannelInboundHandler authChannelInboundHandler,
+            @Value('${auth.port:3724}') int port // If we load our config differently we could use the @TupleConstructor for less code here
     ) {
         this.authDecoderService = authDecoderService
         this.authChannelInboundHandler = authChannelInboundHandler
+        this.port = port
     }
-    @Value('${auth.port:3724}')
-    int port
 
     private static final EventLoopGroup bossGroup = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory())
     private static final EventLoopGroup workerGroup = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory())

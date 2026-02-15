@@ -1,8 +1,11 @@
 package com.woodlands.yanp.auth
 
+/**
+ * Enum representing commands sent from the client to the server as part of the Auth workflow
+ */
 enum AuthCommand {
 
-    CMD_AUTH_LOGON_CHALLENGE(0x00),
+    CMD_AUTH_REQUEST_LOGIN_CHALLENGE(0x00), // Request a Login Challenge from the Server
     CMD_AUTH_LOGON_PROOF (0x01),
     CMD_AUTH_RECONNECT_CHALLENGE(0x02),
     CMD_AUTH_RECONNECT_PROOF(0x03),

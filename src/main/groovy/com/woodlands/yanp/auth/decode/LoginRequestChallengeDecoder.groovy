@@ -2,7 +2,7 @@ package com.woodlands.yanp.auth.decode
 
 import com.woodlands.yanp.auth.AuthCommand
 import com.woodlands.yanp.auth.AuthCommandDecoder
-import com.woodlands.yanp.auth.message.LoginRequestMessage
+import com.woodlands.yanp.auth.message.LoginRequestChallengeMessage
 import com.woodlands.yanp.common.BitUtils
 import groovy.util.logging.Slf4j
 import io.netty.buffer.ByteBuf
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 
 @Slf4j
 @Service
-class LoginRequestDecoder implements AuthCommandDecoder<LoginRequestMessage> {
+class LoginRequestChallengeDecoder implements AuthCommandDecoder<LoginRequestChallengeMessage> {
 
     /* We assume for the decoder that we've already read the first byte containing the command,
        so this size is one less than the entire packet sent to us */
@@ -39,15 +39,15 @@ class LoginRequestDecoder implements AuthCommandDecoder<LoginRequestMessage> {
 
     @Override
     boolean handles(AuthCommand command) {
-        return command == AuthCommand.CMD_AUTH_LOGON_CHALLENGE
+        return command == AuthCommand.CMD_AUTH_REQUEST_LOGIN_CHALLENGE
     }
 
     @Override
-    LoginRequestMessage decode(ByteBuf byteBuf) {
+    LoginRequestChallengeMessage decode(ByteBuf byteBuf) {
         log.debug('Decoding login request message')
 
         if (byteBuf.readableBytes() < COMMAND_SIZE) {
-            log.error("Incorrect packet size when decoding: $AuthCommand.CMD_AUTH_LOGON_CHALLENGE")
+            log.error("Incorrect packet size when decoding: $AuthCommand.CMD_AUTH_REQUEST_LOGIN_CHALLENGE")
             byteBuf.resetReaderIndex()
             return null
         }
@@ -68,7 +68,7 @@ class LoginRequestDecoder implements AuthCommandDecoder<LoginRequestMessage> {
         int ip = byteBuf.readIntLE()
         byte iLength = byteBuf.readByte()
         if (byteBuf.readableBytes() < iLength) {
-            log.error("Incorrect packet size when decoding I (account name): $AuthCommand.CMD_AUTH_LOGON_CHALLENGE")
+            log.error("Incorrect packet size when decoding I (account name): $AuthCommand.CMD_AUTH_REQUEST_LOGIN_CHALLENGE")
             byteBuf.resetReaderIndex()
             return null
         }
@@ -77,7 +77,7 @@ class LoginRequestDecoder implements AuthCommandDecoder<LoginRequestMessage> {
         byteBuf.readBytes(accountName)
 
         // ByteBuf is converted into this AuthMessage which gets picked up in the Handler
-        new LoginRequestMessage(
+        new LoginRequestChallengeMessage(
                 error: error,
                 size: size,
                 gameName: gameName,

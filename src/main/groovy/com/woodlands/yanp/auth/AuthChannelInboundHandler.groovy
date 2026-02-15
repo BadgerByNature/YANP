@@ -3,7 +3,6 @@ package com.woodlands.yanp.auth
 import com.woodlands.yanp.auth.message.AuthMessage
 import com.woodlands.yanp.auth.message.handler.AuthMessageHandler
 import groovy.util.logging.Slf4j
-import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
 import org.springframework.stereotype.Service
@@ -36,10 +35,10 @@ class AuthChannelInboundHandler extends ChannelInboundHandlerAdapter {
     @Override
     void channelRead(ChannelHandlerContext ctx, Object msg) {
         if (msg instanceof AuthMessage) {
-            var handler = authMessageHandlers.find {
+            // This should be guaranteed assuming you don't add an AuthMessage without also adding a handler for it
+            authMessageHandlers.find {
                 it.handles(msg)
-            }
-            handler.handle(msg, ctx.channel())
+            }.handle(msg, ctx.channel())
         }
         // TODO Do we need to release the underlying ByteBuf at this point? At any point?
     }

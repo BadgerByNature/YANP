@@ -23,7 +23,7 @@ class BanService {
     }
 
     BanStatus getAccountBanStatus(Long accountId) {
-        def banRecord = accountBannedRepository.findByIdAndActive(accountId, true)
+        def banRecord = accountBannedRepository.findByIdAndIsActive(accountId, true)
         if (!banRecord) return BanStatus.NONE
         if (banRecord.bannedAt == banRecord.expiresAt) return BanStatus.PERMANENT
         return BanStatus.TEMPORARY

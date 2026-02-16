@@ -63,6 +63,8 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
 
         def account = accountService.getAccount(message.accountName)
         if (account == null) {
+            // Just log as debug, this could happen all the time by people mistyping account names
+            log.debug("Account not found during login: $message.accountName")
             payload.write(AuthResult.WOW_FAIL_UNKNOWN_ACCOUNT.code)
             return
         }
@@ -74,11 +76,14 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
         }
 
         def banStatus = banService.getAccountBanStatus(account.id)
+        log.debug("Account login ban status: accountId=$account.id, banStatus=$banStatus")
         switch (banStatus) {
             case BanStatus.TEMPORARY:
+                log.debug("Banned Account attempted to login: accountId=$account.id, accountName=$message.accountName, banStatus:$banStatus")
                 payload.write(AuthResult.WOW_FAIL_BANNED.code)
                 return
             case BanStatus.PERMANENT:
+                log.debug("Banned Account attempted to login: accountId=$account.id, accountName=$message.accountName, banStatus:$banStatus")
                 payload.write(AuthResult.WOW_FAIL_SUSPENDED.code)
                 return
             default:
@@ -88,6 +93,7 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
         // TODO SRP Stuff
 
         // TODO Default 'Banned' response until all the logic is working
+        log.debug('Account "successfully" logged in')
         payload.write(AuthResult.WOW_FAIL_BANNED.code)
     }
 }

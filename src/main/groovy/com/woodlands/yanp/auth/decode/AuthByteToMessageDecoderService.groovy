@@ -39,7 +39,7 @@ class AuthByteToMessageDecoderService extends ByteToMessageDecoder {
         byte commandCode = byteBuf.readByte()
 
         AuthCommand command = AuthCommand.fromCode(commandCode)
-        var decoder = authCommandDecoders.find { it -> it.handles(command) }
+        def decoder = authCommandDecoders.find { it -> it.handles(command) }
         if (decoder != null) {
             // TODO Handle failure to decode
             // Wrap in DecodeResult<T> with success/fail and also object?

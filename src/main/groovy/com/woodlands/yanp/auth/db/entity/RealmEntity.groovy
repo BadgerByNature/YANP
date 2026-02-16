@@ -16,48 +16,48 @@ class RealmEntity {
     @Id
     @Column(name = "ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id
+    Integer id
 
     /** The realm name. Max 32 characters */
     @JsonProperty
     @Column(name = "NAME", length = 32, nullable = false)
-    private String name
+    String name
 
     /** The IP address. */
     @Column(name = "ADDRESS", length = 32, nullable = false)
-    private String address
+    String address
 
     /** The port to connect on. */
     @Column(name = "PORT")
-    private Integer port
+    Integer port
 
     /** The icon. */
     @Column(name = "ICON")
-    private Integer icon
+    Integer icon
 
     /** The realmflags. */
     @JsonProperty
     @Column(name = "REALMFLAGS")
-    private Integer realmFlags
+    Integer realmFlags
 
     /** The timezone. */
     @JsonProperty
     @Column(name = "TIMEZONE")
-    private Integer timezone
+    Integer timezone
 
     /** The allowed security level. */
     @Column(name = "ALLOWEDSECURITYLEVEL")
-    private Integer allowedSecurityLevel
+    Integer allowedSecurityLevel
 
     /** The population. */
     @JsonProperty
     @Column(name = "POPULATION")
-    private Float population
+    Float population
 
     /** The realmbuilds. */
     @JsonProperty
     @Column(name = "REALMBUILDS", length = 64, nullable = false)
-    private String realmBuilds
+    String realmBuilds
 
     @Override
     int hashCode() {

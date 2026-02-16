@@ -25,6 +25,7 @@ dependencies {
 	implementation 'org.apache.groovy:groovy:5.0.4'
 
 	implementation 'io.netty:netty-all:4.2.10.Final'
+	implementation 'org.bouncycastle:bcprov-jdk18on:1.83'
 
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 

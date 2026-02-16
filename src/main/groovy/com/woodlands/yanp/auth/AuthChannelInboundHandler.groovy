@@ -3,6 +3,7 @@ package com.woodlands.yanp.auth
 import com.woodlands.yanp.auth.message.AuthMessage
 import com.woodlands.yanp.auth.message.handler.AuthMessageHandler
 import groovy.util.logging.Slf4j
+import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
 import org.springframework.stereotype.Service
@@ -12,8 +13,8 @@ import org.springframework.stereotype.Service
  */
 @Slf4j
 @Service
+@Sharable
 class AuthChannelInboundHandler extends ChannelInboundHandlerAdapter {
-
 
     List<AuthMessageHandler> authMessageHandlers
 

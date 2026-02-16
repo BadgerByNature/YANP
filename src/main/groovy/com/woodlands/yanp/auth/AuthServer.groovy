@@ -2,6 +2,7 @@ package com.woodlands.yanp.auth
 
 import com.woodlands.yanp.auth.decode.AuthByteToMessageDecoderService
 import com.woodlands.yanp.auth.encode.AuthResponseEncoder
+import com.woodlands.yanp.auth.message.AuthMessage
 import groovy.util.logging.Slf4j
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.buffer.PooledByteBufAllocator
@@ -27,18 +28,18 @@ import org.springframework.stereotype.Service
 @Service
 class AuthServer {
 
-    private final AuthByteToMessageDecoderService authDecoderService
     private final AuthChannelInboundHandler authChannelInboundHandler
     private final AuthResponseEncoder authResponseEncoder
+    private final List<AuthCommandDecoder<? extends AuthMessage>> authCommandDecoders
     final int port
 
     AuthServer(
-            AuthByteToMessageDecoderService authDecoderService,
             AuthChannelInboundHandler authChannelInboundHandler,
             AuthResponseEncoder authResponseEncoder,
+            List<AuthCommandDecoder<? extends AuthMessage>> authCommandDecoders,
             @Value('${auth.port:3724}') int port // If we load our config differently we could use the @TupleConstructor for less code here
     ) {
-        this.authDecoderService = authDecoderService
+        this.authCommandDecoders = authCommandDecoders
         this.authChannelInboundHandler = authChannelInboundHandler
         this.authResponseEncoder = authResponseEncoder
         this.port = port
@@ -58,7 +59,7 @@ class AuthServer {
                 protected void initChannel(Channel ch) throws Exception {
                     // Create a new AuthChannelInboundHandler here instead of autowiring
                     // So that we can maintain state per Channel, e.g. account name and login status
-                    ch.pipeline().addLast("decoder", authDecoderService)
+                    ch.pipeline().addLast("decoder", new AuthByteToMessageDecoderService(authCommandDecoders))
                     ch.pipeline().addLast(authChannelInboundHandler)
                     ch.pipeline().addLast("encoder", authResponseEncoder)
                 }

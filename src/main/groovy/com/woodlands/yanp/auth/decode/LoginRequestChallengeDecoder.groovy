@@ -80,18 +80,18 @@ class LoginRequestChallengeDecoder implements AuthCommandDecoder<LoginRequestCha
         new LoginRequestChallengeMessage(
                 error: error,
                 size: size,
-                gameName: gameName,
+                gameName: new String(gameName),
                 majorVersion: majorVersion,
                 minorVersion: minorVersion,
                 patchVersion: patchVersion,
                 build: build,
-                arch: arch,
-                os: os,
-                locale: locale,
+                arch: new String(arch),
+                os: new String(os),
+                locale: new String(locale),
                 timezone: timezone,
                 ip: ip,
                 nameLength: iLength,
-                accountName: accountName
+                accountName: new String(accountName)
         )
     }
 }

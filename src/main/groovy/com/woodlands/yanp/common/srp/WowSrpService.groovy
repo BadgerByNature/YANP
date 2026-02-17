@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service
 class WowSrpService {
 
     /** The 'Safe Prime'' */
-    private static final BigInteger N = new BigInteger('894B645E89E1535BBDAD5B8B290650530801B18EBFBF5E8FAB3C82872A3E9BB7'.decodeHex())
+    private static final BigInteger N = new BigInteger('894B645E89E1535BBDAD5B8B290650530801B18EBFBF5E8FAB3C82872A3E9BB7', 16)
     /** The 'Generator' of the multiplicative group */
     private static final BigInteger g = BigInteger.valueOf(7)
     /** Just a holder for the Safe Prime and Generator */
@@ -29,7 +29,7 @@ class WowSrpService {
 
 
     static byte[] generateChallenge(Channel ch, AccountEntity account) {
-        def verifier = new BigInteger(account.v.decodeHex())
+        def verifier = new BigInteger(account.v, 16)
         def salt = account.s.decodeHex()
         def I = account.username.getBytes()
         def securityFlags = (byte)0x00
@@ -49,7 +49,7 @@ class WowSrpService {
         // The client expects 32 byte BigInts and nothing more or less
         lew.write(BitUtil.toLEByteArray(B, 32))
         lew.write(1) // Hard-coded in every server Impl I've seen
-        lew.write(g.toByteArray()) // TODO Does this just write a single byte? Why isn't this one reversed first?
+        lew.write(g.toByteArray()) // This 'BigInteger' is only a single byte - 0x07
         byte[] N_bytes = BitUtil.toLEByteArray(N, 32)
         lew.write(N_bytes.length) // Should always be 32 if we are enforcing min size
         lew.write(N_bytes)

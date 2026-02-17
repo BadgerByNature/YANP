@@ -70,7 +70,7 @@ class AccountEntity {
     Long mutedUntil
 
     /** Locale Id.
-     *  @see com.woodlands.yanp.common.constants.LocalizationId */
+     *  @see com.woodlands.yanp.common.constant.LocalizationId */
     @JsonProperty
     @Column(name = 'LOCALE')
     String localeId

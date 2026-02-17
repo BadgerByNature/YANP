@@ -1,4 +1,4 @@
-package com.woodlands.yanp.common.constants
+package com.woodlands.yanp.common.constant
 
 import java.util.stream.Stream
 

@@ -29,15 +29,15 @@ class AccountEntity {
     @Column(name = 'GMLEVEL')
     Integer gmLevel
 
-    /** The session key. */
+    /** The SRP6 session key. Updated each login */
     @Column(name = 'SESSIONKEY')
     String sessionKey
 
-    /** The v. */
+    /** The SRP6 verifier value */
     @Column(name = 'V', nullable = false)
     String v
 
-    /** The s. */
+    /** The SRP6 salt value */
     @Column(name = 'S', nullable = false)
     String s
 

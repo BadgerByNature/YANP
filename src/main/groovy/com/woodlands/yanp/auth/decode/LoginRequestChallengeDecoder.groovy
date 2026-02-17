@@ -3,7 +3,7 @@ package com.woodlands.yanp.auth.decode
 import com.woodlands.yanp.auth.AuthCommand
 import com.woodlands.yanp.auth.AuthCommandDecoder
 import com.woodlands.yanp.auth.message.LoginRequestChallengeMessage
-import com.woodlands.yanp.common.BitUtils
+import com.woodlands.yanp.common.BitUtil
 import groovy.util.logging.Slf4j
 import io.netty.buffer.ByteBuf
 import org.springframework.stereotype.Service
@@ -54,16 +54,16 @@ class LoginRequestChallengeDecoder implements AuthCommandDecoder<LoginRequestCha
 
         byte error = byteBuf.readByte()
         short size = byteBuf.readShortLE()
-        byte[] gameName = BitUtils.readLECString(byteBuf, 4)
+        byte[] gameName = BitUtil.readLECString(byteBuf, 4)
         byte majorVersion = byteBuf.readByte()
         byte minorVersion = byteBuf.readByte()
         byte patchVersion = byteBuf.readByte()
         short build = byteBuf.readShortLE()
-        byte[] arch = BitUtils.readLECString(byteBuf, 4);
-        byte[] os = BitUtils.readLECString(byteBuf, 4);
+        byte[] arch = BitUtil.readLECString(byteBuf, 4);
+        byte[] os = BitUtil.readLECString(byteBuf, 4);
         byte[] locale = new byte[4]
         byteBuf.readBytes(locale)
-        BitUtils.reverseBuffer(locale)
+        BitUtil.reverseBuffer(locale)
         int timezone = byteBuf.readIntLE()
         int ip = byteBuf.readIntLE()
         byte iLength = byteBuf.readByte()

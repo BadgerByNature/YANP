@@ -97,56 +97,6 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
         payload.write(AuthResult.WOW_SUCCESS.code)
         payload.writeBytes(challengePayload)
 
-//        // TODO Break this whole SRP method and business into its own service for easier testing
-        // TODO It's broken out - test that we get as far as we did the other night before committing anything
-//        doSrpStuff(ch, account, payload)
-
         log.debug('Challenge Request successful, sending challenge')
     }
-
-//    void doSrpStuff(Channel ch, AccountEntity account, ByteArrayOutputStream payload) {
-//        def verifier = new BigInteger(account.v.decodeHex())
-//        def salt = account.s.decodeHex()
-//        def I = account.username.getBytes()
-//        def securityFlags = (byte)0x00
-//
-//        WowSrp6Server srp6Server = WowSrp6Server.init(params, verifier, I, salt, new SHA1Digest(), RandomUtil.secureRandom)
-//        BigInteger B = srp6Server.generateServerCredentials()
-//
-//        ch.attr(AuthServer.SRP_ATTRIBUTE).set(srp6Server)
-//
-//        payload.write(AuthResult.WOW_SUCCESS.code)
-//
-//        def lew = new LittleEndianOutputWriter()
-//        // TODO Why are we converting BigIntegers to Little-Endian byte arrays just to write them into a LE writer which just re-reverses them back to their original state?
-//        // Is it just to make sure we're 32-byte padded? We can do that without LE logic
-//        // And there's nothing here to stop us from being MORE Than 32 bytes which does, in fact, break this by overwriting into what should be the next field
-//        // The client expects 32 byte BigInts and nothing more or less
-//        lew.write(BitUtil.toLEByteArray(B, 32))
-//        lew.write(1) // Hard-coded in every server Impl I've seen
-//        lew.write(g.toByteArray()) // TODO Does this just write a single byte? Why isn't this one reversed first?
-//        byte[] N_bytes = BitUtil.toLEByteArray(N, 32)
-//        lew.write(N_bytes.length) // Should always be 32 if we are enforcing min size
-//        lew.write(N_bytes)
-//        lew.write(salt)
-//        lew.write(VERSION_CHALLENGE)
-//        lew.write(securityFlags) // security flags
-//        if ((securityFlags & 0x1) == 0x1) {
-//            lew.writeInt(0)
-//            lew.writeLong(0)
-//            lew.writeLong(0)
-//        }
-//        if ((securityFlags & 0x2) == 0x2) {
-//            lew.write(0)
-//            lew.write(0)
-//            lew.write(0)
-//            lew.write(0)
-//            lew.writeLong(0)
-//        }
-//        if ((securityFlags & 0x4) == 0x4) {
-//            lew.write(1)
-//        }
-//
-//        payload.writeBytes(lew.baos.toByteArray())
-//    }
 }

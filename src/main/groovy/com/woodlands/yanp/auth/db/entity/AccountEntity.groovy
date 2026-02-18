@@ -16,79 +16,79 @@ class AccountEntity {
 
     @JsonProperty
     @Id
-    @Column(name = 'ID', nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id
+    @Column(name = 'ID', nullable = false)
+    Long id
 
     @JsonProperty
     @Column(name = 'USERNAME', length = 32, unique = true)
-    private String username
+    String username
 
     /** Access level of account 0 = regular user, > 0 = GM. */
     @JsonProperty
     @Column(name = 'GMLEVEL')
-    private Integer gmLevel
+    Integer gmLevel
 
-    /** The session key. */
+    /** The SRP6 session key. Updated each login */
     @Column(name = 'SESSIONKEY')
-    private String sessionKey
+    String sessionKey
 
-    /** The v. */
+    /** The SRP6 verifier value */
     @Column(name = 'V', nullable = false)
-    private String v
+    String v
 
-    /** The s. */
+    /** The SRP6 salt value */
     @Column(name = 'S', nullable = false)
-    private String s
+    String s
 
     @JsonProperty
     @Column(name = 'EMAIL')
-    private String email
+    String email
 
     @JsonProperty
     @Column(name = 'JOINDATE')
-    private LocalDateTime joinDate
+    LocalDateTime joinDate
 
     @Column(name = 'LOCKEDIP', length = 30)
-    private String lockedIp
+    String lockedIp
 
     @Column(name = 'FAILED_LOGINS')
-    private Long failedLogins
+    Long failedLogins
 
     @Column(name = 'LOCKED')
-    private Boolean locked
+    Boolean locked
     
     @Column(name = 'ACTIVE_REALM_ID')
-    private Long activeRealmId
+    Long activeRealmId
 
     @JsonProperty
     @Column(name = 'EXPANSION')
-    private Integer expansion
+    Integer expansion
 
     /** Unix time when an account will become unmuted */
     @Column(name = 'MUTETIME')
-    private Long mutedUntil
+    Long mutedUntil
 
     /** Locale Id.
-     *  @see com.woodlands.yanp.common.constants.LocalizationId */
+     *  @see com.woodlands.yanp.common.constant.LocalizationId */
     @JsonProperty
     @Column(name = 'LOCALE')
-    private String localeId
+    String localeId
 
     /** 2-Factor auth token */
     @Column(name = 'TOKEN')
-    private String token
+    String token
 
     /** Operating System, e.g. Win/Mac */
     @Column(name = 'OS')
-    private String os
+    String os
 
     /** Platform, e.g. x86 */
     @Column(name = 'PLATFORM')
-    private String platform
+    String platform
 
     @Column(name = 'flags')
-    private Integer flags
+    Integer flags
 
     @Override
     int hashCode() {

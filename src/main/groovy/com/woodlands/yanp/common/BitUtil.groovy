@@ -2,7 +2,7 @@ package com.woodlands.yanp.common
 
 import io.netty.buffer.ByteBuf
 
-class BitUtils {
+class BitUtil {
     /**
      * Reads a little-endian C-string (null terminated string) from the given
      * {@code ByteBuf}.
@@ -102,14 +102,11 @@ class BitUtils {
      */
     static final byte[] toLEByteArray(BigInteger bi) {
         byte[] b = bi.toByteArray()
-        int newLength
+        int newLength = b.length
         boolean ignoreMSB = false
-        if (b[0] == 0) { // most significant byte (sign byte) is 0 (positive), we ignore the sign byte
-            // (if it exists)
-            newLength = b.length - 1
+        if (b[0] == (byte)0) { // most significant byte (sign byte) is 0 (positive), we ignore the sign byte
+            newLength -= 1
             ignoreMSB = true
-        } else {
-            newLength = b.length
         }
         byte[] ret = new byte[newLength]
         for (int i = (b.length - 1), j = 0, end = ignoreMSB ? 1 : 0; i >= end; i--, j++) {
@@ -129,14 +126,11 @@ class BitUtils {
      */
     static final byte[] toLEByteArray(BigInteger bi, int minSize) {
         byte[] b = bi.toByteArray()
-        int newLength
-        boolean ignoreMSB = false
-        if (b[0] == 0) { // most significant byte (sign byte) is 0 (positive), we ignore the sign byte
-            // (if it exists)
-            newLength = b.length - 1
+        int newLength = b.length
+        boolean ignoreMSB = false // TODO We can simplify this logic a little, like newLength = b.length above the if, then newLength -= 1 inside the if
+        if (b[0] == (byte)0) { // most significant byte (sign byte) is 0 (positive), we ignore the sign byte
+            newLength -= 1
             ignoreMSB = true
-        } else {
-            newLength = b.length
         }
         newLength = Math.max(newLength, minSize) // if minSize > length, set length = minSize
         byte[] ret = new byte[newLength]
@@ -145,6 +139,8 @@ class BitUtils {
         }
         return ret
     }
+
+    //  TODO Get BigInteger from HexString - Check expected length
 
     /**
      * Converts a {@link BigInteger} into a big-endian byte array of {@code minSize}
@@ -156,14 +152,11 @@ class BitUtils {
      */
     static final byte[] toByteArray(BigInteger bi, int minSize) {
         byte[] b = bi.toByteArray()
-        int newLength
+        int newLength = b.length
         boolean ignoreMSB = false
-        if (b[0] == 0) { // most significant byte (sign byte) is 0 (positive), we ignore the sign byte
-            // (if it exists)
-            newLength = b.length - 1
+        if (b[0] == (byte)0) { // most significant byte (sign byte) is 0 (positive), we ignore the sign byte
+            newLength -= 1
             ignoreMSB = true
-        } else {
-            newLength = b.length
         }
         newLength = Math.max(newLength, minSize) // if minSize > length, set length = minSize
         byte[] ret = new byte[newLength]

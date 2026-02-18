@@ -1,15 +1,16 @@
 package com.woodlands.yanp.auth.encode
 
-
 import com.woodlands.yanp.common.network.ByteBufWowPacket
 import groovy.util.logging.Slf4j
 import io.netty.buffer.ByteBuf
+import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToByteEncoder
 import org.springframework.stereotype.Service
 
 @Slf4j
 @Service
+@Sharable
 class AuthResponseEncoder extends MessageToByteEncoder<ByteBufWowPacket> {
 
     @Override

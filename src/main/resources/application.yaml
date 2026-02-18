@@ -13,7 +13,8 @@ io:
       level: paranoid # TODO Turn this back down to advanced or simple after some testing
 logging:
   level:
-    com.woodlands.yanp: DEBUG
+    com.woodlands.yanp: INFO
+    com.woodlands.yanp.auth.message.handler: DEBUG
     root: INFO
 server:
   port: 8081 # WebServer port

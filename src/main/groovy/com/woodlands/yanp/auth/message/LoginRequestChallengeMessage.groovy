@@ -6,16 +6,16 @@ import groovy.transform.ToString
 class LoginRequestChallengeMessage extends AuthMessage {
     byte error
     short size
-    byte[] gameName
+    String gameName
     byte majorVersion
     byte minorVersion
     byte patchVersion
     short build
-    byte[] arch
-    byte[] os
-    byte[] locale
+    String arch
+    String os
+    String locale
     int timezone
     int ip
     byte nameLength
-    byte[] accountName
+    String accountName
 }

@@ -18,7 +18,7 @@ import java.security.SecureRandom
 class WowSrp6Server extends SRP6Server {
 
     byte[] I // Account name as byte array
-    byte[] s // Salt
+    byte[] salt // Salt
 
     /* TODO Once this is proven working, figure out which overrides we do and do not need.
      * Swap to a public constructor that takes the values instead of using .init
@@ -36,7 +36,7 @@ class WowSrp6Server extends SRP6Server {
     private final void initInternal(SRP6GroupParameters params, BigInteger v, byte[] I, byte[] s, Digest digest,
                                     SecureRandom random) {
         this.I = Arrays.copyOf(I, I.length)
-        this.s = Arrays.copyOf(s, s.length)
+        this.salt = Arrays.copyOf(s, s.length)
         super.init(params.getN(), params.getG(), v, digest, random)
     }
 
@@ -90,11 +90,11 @@ class WowSrp6Server extends SRP6Server {
     @Override
     final boolean verifyClientEvidenceMessage(BigInteger clientM1) throws CryptoException {
         // Verify pre-requirements
-        if (this.A == null || this.B == null || this.s == null) {
+        if (this.A == null || this.B == null || this.S == null) {
             throw new CryptoException("Impossible to compute and verify M1: some data are missing from the previous operations (A,B,S)")
         }
         // Compute the own client evidence message 'M1'
-        BigInteger computedM1 = WowSrp6Util.calculateM1(digest, N, g, I, s, A, B, S)
+        BigInteger computedM1 = WowSrp6Util.calculateM1(digest, N, g, I, salt, A, B, S)
         if (computedM1.equals(clientM1)) {
             this.M1 = clientM1
             return true
@@ -112,7 +112,7 @@ class WowSrp6Server extends SRP6Server {
     @Override
     final BigInteger calculateServerEvidenceMessage() throws CryptoException {
         // Verify pre-requirements
-        if (this.A == null || this.M1 == null || this.s == null) {
+        if (this.A == null || this.M1 == null || this.S == null) {
             throw new CryptoException("Impossible to compute M2: some data are missing from the previous operations (A,M1,S)")
         }
         // Compute the server evidence message 'M2'
@@ -130,7 +130,7 @@ class WowSrp6Server extends SRP6Server {
     @Override
     final BigInteger calculateSessionKey() throws CryptoException {
         // Verify pre-requirements
-        if (this.s == null || this.M1 == null || this.M2 == null) {
+        if (this.S == null || this.M1 == null || this.M2 == null) {
             throw new CryptoException("Impossible to compute Key: " + "some data are missing from the previous operations (S,M1,M2)")
         }
         this.Key = WowSrp6Util.calculateKey(digest, N, S)

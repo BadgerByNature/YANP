@@ -75,7 +75,7 @@ class WowSrp6Server extends SRP6Server {
     final BigInteger calculateSecret(BigInteger clientA) throws CryptoException {
         this.A = WowSrp6Util.validatePublicValue(N, clientA)
         this.u = WowSrp6Util.calculateU(digest, N, A, B)
-        this.s = v.modPow(u, N).multiply(A).mod(N).modPow(b, N)
+        this.S = v.modPow(u, N).multiply(A).mod(N).modPow(b, N)
         return S
     }
 

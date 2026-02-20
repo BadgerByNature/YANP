@@ -62,7 +62,7 @@ class WowSrp6Util extends SRP6Util {
      * @param S The secret calculated by both sides
      * @return M1 The calculated client evidence message
      */
-    static BigInteger calculateM1(Digest digest, BigInteger N, BigInteger g, byte[] I, byte[] s, BigInteger A,
+    static BigInteger calculateM1(Digest digest, BigInteger N, BigInteger g, byte[] I, byte[] salt, BigInteger A,
                                   BigInteger B, BigInteger S) {
         BigInteger K = calculateKey(digest, N, S)
         int padLength = (N.bitLength() + 7) / 8
@@ -87,10 +87,10 @@ class WowSrp6Util extends SRP6Util {
         // Add in the bytes now
         digest.update(product, 0, product.length) // H( N ) ^ H( g )
         digest.update(I_digested, 0, I_digested.length) // H( I )
-        digest.update(s, 0, s.length) // s [salt]
+        digest.update(BitUtil.reverse(salt), 0, salt.length) // s [salt]
         digest.update(A_bytes, 0, A_bytes.length) // A
         digest.update(B_bytes, 0, B_bytes.length) // B
-        digest.update(K_bytes, 0, K_bytes.length) // H( S )
+        digest.update(BitUtil.reverse(K_bytes), 0, K_bytes.length) // H( S )
         byte[] output = new byte[digest.getDigestSize()]
         digest.doFinal(output, 0)
         BigInteger M1 = new BigInteger(1, output)
@@ -153,7 +153,7 @@ class WowSrp6Util extends SRP6Util {
             K_bytes[i] = S_even_digested_bytes[j]
             K_bytes[i + 1] = S_odd_digested_bytes[j]
         }
-        return new BigInteger(1, K_bytes)
+        return new BigInteger(1, BitUtil.reverse(K_bytes))
     }
 
     private static BigInteger hashPaddedPair(Digest digest, BigInteger N, BigInteger n1, BigInteger n2) {

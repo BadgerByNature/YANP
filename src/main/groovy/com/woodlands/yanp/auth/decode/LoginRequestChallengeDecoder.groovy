@@ -15,6 +15,7 @@ class LoginRequestChallengeDecoder implements AuthCommandDecoder<LoginRequestCha
     /* We assume for the decoder that we've already read the first byte containing the command,
        so this size is one less than the entire packet sent to us */
     private static final int COMMAND_SIZE = 33
+    // TODO Actually the command passes in the size, we should check that we get the error and size bites, then make sure the size is correct
 
     /* Reference From vMangos/CMangos/AzerothCore
     typedef struct AUTH_LOGON_CHALLENGE_C
@@ -52,8 +53,8 @@ class LoginRequestChallengeDecoder implements AuthCommandDecoder<LoginRequestCha
             return null
         }
 
-        byte error = byteBuf.readByte()
-        short size = byteBuf.readShortLE()
+        byte error = byteBuf.readByte() // TODO Handle ERROR = True here ?
+        short size = byteBuf.readShortLE() // TODO Handle size not matching the rest of the body
         byte[] gameName = BitUtil.readLECString(byteBuf, 4)
         byte majorVersion = byteBuf.readByte()
         byte minorVersion = byteBuf.readByte()
@@ -72,7 +73,7 @@ class LoginRequestChallengeDecoder implements AuthCommandDecoder<LoginRequestCha
             byteBuf.resetReaderIndex()
             return null
         }
-        // Every other codebase calls this `I` with no explanation
+        // Every other codebase calls this `I`, which is a value designated as part of SRP6 authentication
         byte[] accountName = new byte[iLength]
         byteBuf.readBytes(accountName)
 

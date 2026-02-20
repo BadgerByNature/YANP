@@ -17,6 +17,10 @@ import java.security.SecureRandom
  * */
 class WowSrp6Server extends SRP6Server {
 
+    // TODO Remove this once we have a fully working implementation
+    /** For testing/troubleshooting purposes when we need a KNOWN "random" to reproduce expected results */
+    static BigInteger FAKE_B = null //new BigInteger("fc009cec3a0c60324f1ed1f37916fb4ad36571", 16)
+
     byte[] I // Account name as byte array
     byte[] salt // Salt
 
@@ -58,7 +62,12 @@ class WowSrp6Server extends SRP6Server {
     @Override
     final BigInteger generateServerCredentials() {
         BigInteger k = BigInteger.valueOf(3) // k = 3 for legacy SRP-6
-        this.b = selectPrivateValue()
+        if (FAKE_B) {
+            this.b = FAKE_B
+        } else {
+            this.b = selectPrivateValue()
+        }
+        this.b = FAKE_B
         this.B = k.multiply(v).mod(N).add(g.modPow(b, N)).mod(N)
         return B
     }
@@ -95,7 +104,7 @@ class WowSrp6Server extends SRP6Server {
         }
         // Compute the own client evidence message 'M1'
         BigInteger computedM1 = WowSrp6Util.calculateM1(digest, N, g, I, salt, A, B, S)
-        if (computedM1.equals(clientM1)) {
+        if (computedM1 == clientM1) {
             this.M1 = clientM1
             return true
         }
@@ -136,5 +145,4 @@ class WowSrp6Server extends SRP6Server {
         this.Key = WowSrp6Util.calculateKey(digest, N, S)
         return Key
     }
-
 }

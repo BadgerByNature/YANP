@@ -2,18 +2,23 @@ package com.woodlands.yanp.common.srp
 
 import com.woodlands.yanp.auth.AuthServer
 import com.woodlands.yanp.auth.db.entity.AccountEntity
+import com.woodlands.yanp.auth.message.LoginProofMessage
+import com.woodlands.yanp.auth.message.handler.LoginProofMessageHandler
 import com.woodlands.yanp.common.BitUtil
-import com.woodlands.yanp.common.RandomUtil
 import com.woodlands.yanp.common.data.LittleEndianOutputWriter
+import groovy.util.logging.Slf4j
 import io.netty.channel.Channel
 import org.bouncycastle.crypto.digests.SHA1Digest
 import org.bouncycastle.crypto.params.SRP6GroupParameters
 import org.springframework.stereotype.Service
 
+import java.security.SecureRandom
+
 /**
  * Service for handling WoW SRP authentication protocols.<br>
  * See https://en.wikipedia.org/wiki/Secure_Remote_Password_protocol for more complete information
  */
+@Slf4j
 @Service
 class WowSrpService {
 
@@ -27,14 +32,19 @@ class WowSrpService {
     public static final byte[] VERSION_CHALLENGE =
             [ 0xBA, 0xA3, 0x1E, 0x99, 0xA0, 0x0B, 0x21, 0x57, 0xFC, 0x37, 0x3F, 0xB3, 0x69, 0xCD, 0xD2, 0xF1 ]
 
+    SecureRandom secureRandom
 
-    static byte[] generateChallenge(Channel ch, AccountEntity account) {
+    WowSrpService(SecureRandom secureRandom) {
+        this.secureRandom = secureRandom
+    }
+
+    byte[] generateChallenge(Channel ch, AccountEntity account) {
         def verifier = new BigInteger(account.v, 16)
         def salt = account.s.decodeHex()
         def I = account.username.getBytes()
         def securityFlags = (byte)0x00
 
-        WowSrp6Server srp6Server = WowSrp6Server.init(params, verifier, I, salt, new SHA1Digest(), RandomUtil.secureRandom)
+        WowSrp6Server srp6Server = WowSrp6Server.init(params, verifier, I, salt, new SHA1Digest(), secureRandom)
         BigInteger B = srp6Server.generateServerCredentials()
 
         // TODO Has to be done here because we need the SRP server. Bad design, refactor once things are working
@@ -42,6 +52,7 @@ class WowSrpService {
 
         // TODO This whole LittleEndianOutputWriter thing is weird since we flip the BigInts before writing them
         // Rethink this design, it seems to be unnecessary. Some things are written LE and some aren't
+        // TODO Update - the .write(byte[]) method does NOT flip bytes. So what's the fucking point of calling it LittleEndianByte[]? I am filled with anger
         def lew = new LittleEndianOutputWriter()
         lew.write(BitUtil.toLEByteArray(B, 32))
         lew.write(1) // Hard-coded in every server Impl I've seen
@@ -49,8 +60,7 @@ class WowSrpService {
         byte[] N_bytes = BitUtil.toLEByteArray(N, 32)
         lew.write(N_bytes.length) // Should always be 32 if we are enforcing min size, some cores hard-code it
         lew.write(N_bytes)
-        lew.write(salt)
-        // TODO Should this be reversed? What does it even do? Writing it reversed showed no change in whether or not we got to Handshaking
+        lew.write(BitUtil.reverse(salt))
         lew.write(VERSION_CHALLENGE)
         lew.write(securityFlags) // security flags
         if ((securityFlags & 0x1) == 0x1) {
@@ -70,5 +80,19 @@ class WowSrpService {
         }
 
         return lew.baos.toByteArray()
+    }
+
+    static LoginProofMessageHandler.LoginProofResponse calculateSessionKey(WowSrp6Server srp6Server, LoginProofMessage loginProofMessage) {
+
+        def response = new LoginProofMessageHandler.LoginProofResponse()
+        def S = srp6Server.calculateSecret(loginProofMessage.A)
+        if (!srp6Server.verifyClientEvidenceMessage(loginProofMessage.M1)) {
+            return null // TODO Don't like this
+        }
+
+        log.info('Successfully validated client M1 against server M1')
+        response.M2 = srp6Server.calculateServerEvidenceMessage()
+        response.sessionKey = srp6Server.calculateSessionKey()
+        response
     }
 }

@@ -70,6 +70,8 @@ class LoginProofMessageHandler implements AuthMessageHandler {
         // TODO Set SessionKey into Account Table
         // TODO Set os, locale, failed_logins, platform as well
 
+        // TODO Verify version via CRC Hash
+
 
         // TODO Validate M2 size not greater than 20?
         payload.write(AuthResult.WOW_SUCCESS.code)

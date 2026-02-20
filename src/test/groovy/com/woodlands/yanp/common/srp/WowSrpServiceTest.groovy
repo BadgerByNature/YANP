@@ -12,7 +12,7 @@ import java.security.SecureRandom
 
 class WowSrpServiceTest extends Specification {
 
-    private static final BigInteger FAKE_B = new BigInteger("a0 f3 ea 3d 34 d7 d2 7b d0 0b 8c 3f 29 37 8d ed fb b4 e3".replace(' ', ''), 16)
+    private static final BigInteger FAKE_B = new BigInteger("98 00 60 81 b0 8e f2 5a 14 5a a4 05 2e 89 29 06 af e1 a7".replace(' ', ''), 16)
 
     @Mock
     SecureRandom secureRandom
@@ -40,7 +40,7 @@ class WowSrpServiceTest extends Specification {
         println result.encodeHex()
 
         then:
-        result == ("76 b3 f4 7f 25 de 3d bd a5 67 e3 1e 96 e3 8f ce c3 2b c7 9c ac 63 a4 fd e7 87 96 67 61 9b 0c 60" +
+        result == ("2268ff8ed7a7fb0e2e4c0a8b7f7473b1535fd6d3a23b56a280be640e9a134007" +
                 "01" +
                 "07" +
                 "20" +
@@ -67,22 +67,24 @@ class WowSrpServiceTest extends Specification {
             wowSrp6Server = args[0]
         }
 
-        BigInteger A = new BigInteger("51 7d 6c 8d 68 cd d6 1f 4f 8c 3c 51 29 8a 18 51 2c af b7 22 0c 45 3d 6b 74 7f 61 0c 5e 76 dd 0f".replace(' ', ''), 16)
-        BigInteger M = fromByteString("d9 6b 51 68 3c 20 8f fd e7 c3 9b 53 2c 30 a5 2a 57 49 3e 15")
+        BigInteger A = new BigInteger("4a b0 03 80 77 ae c7 02 fd 20 55 02 fd 3a 8b 71 cf f7 3f 8a bb c6 09 a7 8f 6c 2f 96 d0 7b 5b 0f".replace(' ', ''), 16)
+        BigInteger M1 = fromByteString("85 67 ef 7b 10 e6 e1 e3 8a 8c 84 d9 48 9f bc e4 37 96 d0 b4")
+        BigInteger M2 = fromByteString("8e be 06 8e 93 3b f7 aa b7 36 b6 db 13 e4 47 93 59 6a f1 61")
 
         // Manual confirmation when debugging
         // BigInteger U = new BigInteger("a5 6f e3 3e fe d9 82 16 7e 66 ef 91 34 1d a6 76 eb 3b 82 7b".replace(' ', ''), 16)
         // BigInteger S = new BigInteger("3c 99 f3 4b a0 0c 27 7d 1b 43 30 33 75 4a b5 ac ef 23 8c ef 69 88 00 04 28 05 80 fd f2 b0 fb a3".replace(' ', ''), 16)
         // BigInteger K = fromByteString("cd b2 82 9c 07 12 a3 29 fc 80 93 b0 72 bd da c8 5d 93 4d 48 fd fe 89 91 87 31 b8 45 90 44 e6 74 7e da 35 61 48 46 3d 9c ")
 
-        def clientProofMessage = new LoginProofMessage(A: A, M1: M)
+        def clientProofMessage = new LoginProofMessage(A: A, M1: M1)
 
         when:
         wowSrpService.generateChallenge(channel, account)
-        def sessionKey = WowSrpService.calculateSessionKey(wowSrp6Server, clientProofMessage)
+        def loginProofResponse = WowSrpService.calculateSessionKey(wowSrp6Server, clientProofMessage)
 
         then:
-        sessionKey
+        loginProofResponse.M2 == M2
+        loginProofResponse.sessionKey
     }
 
     private BigInteger fromByteString(String byteString) {

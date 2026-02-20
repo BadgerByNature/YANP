@@ -67,7 +67,6 @@ class WowSrp6Server extends SRP6Server {
         } else {
             this.b = selectPrivateValue()
         }
-        this.b = FAKE_B
         this.B = k.multiply(v).mod(N).add(g.modPow(b, N)).mod(N)
         return B
     }

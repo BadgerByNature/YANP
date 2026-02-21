@@ -87,7 +87,7 @@ class WowSrp6Util extends SRP6Util {
         // Add in the bytes now
         digest.update(product, 0, product.length) // H( N ) ^ H( g )
         digest.update(I_digested, 0, I_digested.length) // H( I )
-        digest.update(BitUtil.reverse(salt), 0, salt.length) // s [salt]
+        digest.update(salt, 0, salt.length) // s [salt]
         digest.update(A_bytes, 0, A_bytes.length) // A
         digest.update(B_bytes, 0, B_bytes.length) // B
         digest.update(K_bytes, 0, K_bytes.length) // H( S )

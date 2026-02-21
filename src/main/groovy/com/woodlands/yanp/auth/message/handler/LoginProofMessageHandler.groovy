@@ -6,7 +6,7 @@ import com.woodlands.yanp.auth.AuthServer
 import com.woodlands.yanp.auth.message.AuthMessage
 import com.woodlands.yanp.auth.message.LoginProofMessage
 import com.woodlands.yanp.common.BitUtil
-import com.woodlands.yanp.common.data.LittleEndianOutputWriter
+import com.woodlands.yanp.common.data.PacketDataWriter
 import com.woodlands.yanp.common.network.ByteBufWowPacket
 import com.woodlands.yanp.common.srp.WowSrpService
 import groovy.util.logging.Slf4j
@@ -75,12 +75,12 @@ class LoginProofMessageHandler implements AuthMessageHandler {
 
         // TODO Validate M2 size not greater than 20?
         payload.write(AuthResult.WOW_SUCCESS.code)
-        def lew = new LittleEndianOutputWriter()
-        lew.write(BitUtil.toByteArray(response.M2, 20))
-        lew.writeInt(0x00800000) // All the cores use this. Acore labels it "Pro pass (arena tournament)"
-        lew.writeInt(0) // Survey Id
-        lew.writeShort(0) // Login Flags - Per ACore and CMangos: "0x01 has account message"
-        payload.writeBytes(lew.baos.toByteArray())
+        def writer = new PacketDataWriter()
+        writer.write(BitUtil.toByteArray(response.M2, 20))
+        writer.writeIntLE(0x00800000) // All the cores use this. Acore labels it "Pro pass (arena tournament)"
+        writer.writeIntLE(0) // Survey Id
+        writer.writeShortLE(0) // Login Flags - Per ACore and CMangos: "0x01 has account message"
+        payload.writeBytes(writer.getBytes())
     }
 
     static class LoginProofResponse {

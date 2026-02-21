@@ -5,7 +5,7 @@ import com.woodlands.yanp.auth.db.entity.AccountEntity
 import com.woodlands.yanp.auth.message.LoginProofMessage
 import com.woodlands.yanp.auth.message.handler.LoginProofMessageHandler
 import com.woodlands.yanp.common.BitUtil
-import com.woodlands.yanp.common.data.LittleEndianOutputWriter
+import com.woodlands.yanp.common.data.PacketDataWriter
 import groovy.util.logging.Slf4j
 import io.netty.channel.Channel
 import org.bouncycastle.crypto.digests.SHA1Digest
@@ -50,36 +50,33 @@ class WowSrpService {
         // TODO Has to be done here because we need the SRP server. Bad design, refactor once things are working
         ch.attr(AuthServer.SRP_ATTRIBUTE).set(srp6Server)
 
-        // TODO This whole LittleEndianOutputWriter thing is weird since we flip the BigInts before writing them
-        // Rethink this design, it seems to be unnecessary. Some things are written LE and some aren't
-        // TODO Update - the .write(byte[]) method does NOT flip bytes. So what's the fucking point of calling it LittleEndianByte[]? I am filled with anger
-        def lew = new LittleEndianOutputWriter()
-        lew.write(BitUtil.toLEByteArray(B, 32))
-        lew.write(1) // Hard-coded in every server Impl I've seen
-        lew.write(g.toByteArray()) // This 'BigInteger' is only a single byte - 0x07
+        def writer = new PacketDataWriter()
+        writer.write(BitUtil.toLEByteArray(B, 32))
+        writer.writeByte(1) // Hard-coded in every server Impl I've seen
+        writer.write(g.toByteArray()) // This 'BigInteger' is only a single byte - 0x07
         byte[] N_bytes = BitUtil.toLEByteArray(N, 32)
-        lew.write(N_bytes.length) // Should always be 32 if we are enforcing min size, some cores hard-code it
-        lew.write(N_bytes)
-        lew.write(BitUtil.reverse(salt))
-        lew.write(VERSION_CHALLENGE)
-        lew.write(securityFlags) // security flags
+        writer.writeByte(N_bytes.length) // Should always be 32 if we are enforcing min size, some cores hard-code it
+        writer.write(N_bytes)
+        writer.write(BitUtil.reverse(salt))
+        writer.write(VERSION_CHALLENGE)
+        writer.write(securityFlags) // security flags
         if ((securityFlags & 0x1) == 0x1) {
-            lew.writeInt(0)
-            lew.writeLong(0)
-            lew.writeLong(0)
+            writer.writeIntLE(0)
+            writer.writeLongLE(0)
+            writer.writeLongLE(0)
         }
         if ((securityFlags & 0x2) == 0x2) {
-            lew.write(0)
-            lew.write(0)
-            lew.write(0)
-            lew.write(0)
-            lew.writeLong(0)
+            writer.writeByte(0)
+            writer.writeByte(0)
+            writer.writeByte(0)
+            writer.writeByte(0)
+            writer.writeLongLE(0)
         }
         if ((securityFlags & 0x4) == 0x4) {
-            lew.write(1)
+            writer.writeByte(1)
         }
 
-        return lew.baos.toByteArray()
+        return writer.getBytes()
     }
 
     static LoginProofMessageHandler.LoginProofResponse calculateSessionKey(WowSrp6Server srp6Server, LoginProofMessage loginProofMessage) {

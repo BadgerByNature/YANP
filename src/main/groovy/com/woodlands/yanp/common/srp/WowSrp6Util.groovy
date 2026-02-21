@@ -93,7 +93,7 @@ class WowSrp6Util extends SRP6Util {
         digest.update(K_bytes, 0, K_bytes.length) // H( S )
         byte[] output = new byte[digest.getDigestSize()]
         digest.doFinal(output, 0)
-        BigInteger M1 = new BigInteger(1, output)
+        BigInteger M1 = new BigInteger(1, BitUtil.reverse(output))
         return M1
     }
 
@@ -112,7 +112,7 @@ class WowSrp6Util extends SRP6Util {
         BigInteger K = calculateKey(digest, N, S)
         int padLength = (N.bitLength() + 7) / 8
         byte[] A_bytes = BitUtil.reverse(getPadded(A, padLength))
-        byte[] M1_bytes = BigIntegers.asUnsignedByteArray(M1)
+        byte[] M1_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(M1))
         byte[] K_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(K))
         digest.update(A_bytes, 0, A_bytes.length) // A
         digest.update(M1_bytes, 0, M1_bytes.length) // M1

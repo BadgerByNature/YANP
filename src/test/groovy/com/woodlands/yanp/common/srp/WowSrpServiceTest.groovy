@@ -68,13 +68,13 @@ class WowSrpServiceTest extends Specification {
         }
 
         BigInteger A = new BigInteger("4a b0 03 80 77 ae c7 02 fd 20 55 02 fd 3a 8b 71 cf f7 3f 8a bb c6 09 a7 8f 6c 2f 96 d0 7b 5b 0f".replace(' ', ''), 16)
-        BigInteger M1 = fromByteString("85 67 ef 7b 10 e6 e1 e3 8a 8c 84 d9 48 9f bc e4 37 96 d0 b4")
+        BigInteger M1 = fromByteStringReverse("85 67 ef 7b 10 e6 e1 e3 8a 8c 84 d9 48 9f bc e4 37 96 d0 b4")
         BigInteger M2 = fromByteString("8e be 06 8e 93 3b f7 aa b7 36 b6 db 13 e4 47 93 59 6a f1 61")
 
         // Manual confirmation when debugging
-        // BigInteger U = new BigInteger("a5 6f e3 3e fe d9 82 16 7e 66 ef 91 34 1d a6 76 eb 3b 82 7b".replace(' ', ''), 16)
-        // BigInteger S = new BigInteger("3c 99 f3 4b a0 0c 27 7d 1b 43 30 33 75 4a b5 ac ef 23 8c ef 69 88 00 04 28 05 80 fd f2 b0 fb a3".replace(' ', ''), 16)
-        // BigInteger K = fromByteString("cd b2 82 9c 07 12 a3 29 fc 80 93 b0 72 bd da c8 5d 93 4d 48 fd fe 89 91 87 31 b8 45 90 44 e6 74 7e da 35 61 48 46 3d 9c ")
+        // BigInteger U = new BigInteger("fe e8 f4 20 87 49 7b 97 ec 7b be 81 d1 9d 8b 37 8a ef aa 27".replace(' ', ''), 16)
+        // BigInteger S = new BigInteger("1d bb 74 2e 88 a7 b6 7c 1e f2 91 58 d2 e8 b4 68 de 26 0d a5 f3 42 0e f8 a7 74 7a 68 1d 8c 04 62".replace(' ', ''), 16)
+        // BigInteger K = fromByteString("b0 91 bf 7f 84 7e 51 9c 5b e8 b1 4b a0 43 0c ec ec 54 f0 11 84 51 38 9b 34 d8 32 14 17 74 79 d9 aa 77 20 e3 26 7c 00 a9")
 
         def clientProofMessage = new LoginProofMessage(A: A, M1: M1)
 
@@ -88,7 +88,7 @@ class WowSrpServiceTest extends Specification {
     }
 
     private static BigInteger fromByteString(String byteString) {
-        new BigInteger(byteString.replace(' ', ''), 16)
+        new BigInteger(1, byteString.replace(' ', '').decodeHex())
     }
 
     private static BigInteger fromByteStringReverse(String byteString) {
@@ -98,6 +98,6 @@ class WowSrpServiceTest extends Specification {
             result += split[i]
         }
 
-        new BigInteger(result, 16)
+        new BigInteger(1, result.decodeHex())
     }
 }

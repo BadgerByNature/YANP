@@ -54,7 +54,7 @@ class LoginProofDecoder implements AuthCommandDecoder<LoginProofMessage> {
 
         new LoginProofMessage(
                 A: BitUtil.toBigInteger(A_bytes, true),
-                M1: BitUtil.toBigInteger(M1_bytes, false),
+                M1: BitUtil.toBigInteger(M1_bytes, true),
                 crcHash: crcHash,
                 numberOfKeys: numberOfKeys,
                 securityFlags: securityFlags

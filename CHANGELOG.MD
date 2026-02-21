@@ -1,4 +1,4 @@
-## A place to track the current status
+# CHANGELOG
 
 ## 2026-02-20
 * Server currently handles client login up through proof validation using real TBC client against a real in-use CMangos database 

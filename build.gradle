@@ -26,6 +26,8 @@ dependencies {
 
 	implementation 'io.netty:netty-all:4.2.10.Final'
 	implementation 'org.bouncycastle:bcprov-jdk18on:1.83'
+	// Use debug version of bouncycastle when needing to debug into the guts
+	//implementation 'org.bouncycastle:bcprov-debug-jdk18on:1.83'
 
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 

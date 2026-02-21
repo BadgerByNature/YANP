@@ -2,55 +2,38 @@ package com.woodlands.yanp.common.data
 
 import java.nio.charset.Charset
 
-class LittleEndianOutputWriter {
+/**
+ * A wrapper for writing values to a ByteArrayOutputStream that handles
+ * BigEndian and LittleEndian writing
+ */
+class PacketDataWriter {
 
     private static final Charset ASCII = Charset.forName("UTF-8")
 
-    final ByteArrayOutputStream baos = new ByteArrayOutputStream()
+    private final ByteArrayOutputStream baos = new ByteArrayOutputStream()
 
-//    protected GenericLittleEndianWriter() {}
-//
-//    def GenericLittleEndianWriter(ByteArrayOutputStream bos) {
-//        this.baos = bos
-//    }
-//
-//    protected void setByteArrayOutputStream(ByteArrayOutputStream bos) {
-//        this.baos = bos
-//    }
-
-    final void writeZeroBytes(int i) {
-        for (int x = 0; x < i; x++) {
-            baos.write((byte) 0)
-        }
+    byte[] getBytes() {
+        baos.toByteArray()
     }
 
     final void write(byte[] b) {
-        for (int i = 0; i < b.length; i++) {
-            baos.write(b[i])
-        }
+        baos.write(b)
     }
 
     final void write(byte b) {
         baos.write(b)
     }
 
-    final void write(int b) {
+    final void writeByte(int b) {
         baos.write((byte) b)
     }
 
-    final void writeShort(int i) {
+    final void writeShortLE(int i) {
         baos.write((byte) (i & 0xFF))
         baos.write((byte) ((i >>> 8) & 0xFF))
     }
 
-    final void writeInt(int i) {
-        baos.write((byte) (i & 0xFF))
-        baos.write((byte) ((i >>> 8) & 0xFF))
-        baos.write((byte) ((i >>> 16) & 0xFF))
-        baos.write((byte) ((i >>> 24) & 0xFF))
-    }
-
-    final void writeInt(long i) {
+    final void writeIntLE(int i) {
         baos.write((byte) (i & 0xFF))
         baos.write((byte) ((i >>> 8) & 0xFF))
         baos.write((byte) ((i >>> 16) & 0xFF))
@@ -64,16 +47,16 @@ class LittleEndianOutputWriter {
     final void writeAsciiString(String s, int max) {
         this.write(s.getBytes(ASCII))
         for (int i = s.length(); i < max; i++) {
-            this.write(0)
+            this.writeByte(0)
         }
     }
 
     final void writeNullTerminatedAsciiString(String s) {
         this.writeAsciiString(s)
-        this.write(0)
+        this.writeByte(0)
     }
 
-    final void writeLong(long l) {
+    final void writeLongLE(long l) {
         baos.write((byte) (l & 0xFF))
         baos.write((byte) ((l >>> 8) & 0xFF))
         baos.write((byte) ((l >>> 16) & 0xFF))
@@ -84,12 +67,12 @@ class LittleEndianOutputWriter {
         baos.write((byte) ((l >>> 56) & 0xFF))
     }
 
-    final void writeFloat(float f) {
+    final void writeFloatLE(float f) {
         int i = Float.floatToIntBits(f)
-        this.writeInt(i)
+        this.writeIntLE(i)
     }
 
-    final void writeBEFloat(float f) {
+    final void writeFloatBE(float f) {
         int i = Float.floatToIntBits(f)
         baos.write((byte) ((i >>> 24) & 0xFF))
         baos.write((byte) ((i >>> 16) & 0xFF))
@@ -97,12 +80,12 @@ class LittleEndianOutputWriter {
         baos.write((byte) (i & 0xFF))
     }
 
-    final void writeDouble(double d) {
+    final void writeDoubleLE(double d) {
         long l = Double.doubleToLongBits(d)
-        this.writeLong(l)
+        this.writeLongLE(l)
     }
 
-    final void writeBEDouble(double d) {
+    final void writeDoubleBE(double d) {
         long l = Double.doubleToLongBits(d)
         baos.write((byte) ((l >>> 56) & 0xFF))
         baos.write((byte) ((l >>> 48) & 0xFF))
@@ -113,4 +96,5 @@ class LittleEndianOutputWriter {
         baos.write((byte) ((l >>> 8) & 0xFF))
         baos.write((byte) (l & 0xFF))
     }
+
 }

@@ -62,7 +62,7 @@ class WowSrp6Util extends SRP6Util {
      * @param S The secret calculated by both sides
      * @return M1 The calculated client evidence message
      */
-    static BigInteger calculateM1(Digest digest, BigInteger N, BigInteger g, byte[] I, byte[] s, BigInteger A,
+    static BigInteger calculateM1(Digest digest, BigInteger N, BigInteger g, byte[] I, byte[] salt, BigInteger A,
                                   BigInteger B, BigInteger S) {
         BigInteger K = calculateKey(digest, N, S)
         int padLength = (N.bitLength() + 7) / 8
@@ -83,17 +83,17 @@ class WowSrp6Util extends SRP6Util {
         digest.doFinal(I_digested, 0)
         byte[] A_bytes = BitUtil.reverse(getPadded(A, padLength))
         byte[] B_bytes = BitUtil.reverse(getPadded(B, padLength))
-        byte[] K_bytes = BigIntegers.asUnsignedByteArray(K)
+        byte[] K_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(K))
         // Add in the bytes now
         digest.update(product, 0, product.length) // H( N ) ^ H( g )
         digest.update(I_digested, 0, I_digested.length) // H( I )
-        digest.update(s, 0, s.length) // s [salt]
+        digest.update(salt, 0, salt.length) // s [salt]
         digest.update(A_bytes, 0, A_bytes.length) // A
         digest.update(B_bytes, 0, B_bytes.length) // B
         digest.update(K_bytes, 0, K_bytes.length) // H( S )
         byte[] output = new byte[digest.getDigestSize()]
         digest.doFinal(output, 0)
-        BigInteger M1 = new BigInteger(1, output)
+        BigInteger M1 = new BigInteger(1, BitUtil.reverse(output))
         return M1
     }
 
@@ -112,8 +112,8 @@ class WowSrp6Util extends SRP6Util {
         BigInteger K = calculateKey(digest, N, S)
         int padLength = (N.bitLength() + 7) / 8
         byte[] A_bytes = BitUtil.reverse(getPadded(A, padLength))
-        byte[] M1_bytes = BigIntegers.asUnsignedByteArray(M1)
-        byte[] K_bytes = BigIntegers.asUnsignedByteArray(K)
+        byte[] M1_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(M1))
+        byte[] K_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(K))
         digest.update(A_bytes, 0, A_bytes.length) // A
         digest.update(M1_bytes, 0, M1_bytes.length) // M1
         digest.update(K_bytes, 0, K_bytes.length) // K
@@ -153,6 +153,7 @@ class WowSrp6Util extends SRP6Util {
             K_bytes[i] = S_even_digested_bytes[j]
             K_bytes[i + 1] = S_odd_digested_bytes[j]
         }
+        K_bytes = BitUtil.reverse(K_bytes)
         return new BigInteger(1, K_bytes)
     }
 

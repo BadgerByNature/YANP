@@ -6,7 +6,7 @@ package com.woodlands.yanp.auth
 enum AuthCommand {
 
     CMD_AUTH_REQUEST_LOGIN_CHALLENGE(0x00), // Request a Login Challenge from the Server
-    CMD_AUTH_LOGON_PROOF (0x01),
+    CMD_AUTH_LOGIN_PROOF(0x01),
     CMD_AUTH_RECONNECT_CHALLENGE(0x02),
     CMD_AUTH_RECONNECT_PROOF(0x03),
     CMD_REALM_LIST(0x10),

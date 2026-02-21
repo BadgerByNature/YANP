@@ -127,7 +127,7 @@ class BitUtil {
     static final byte[] toLEByteArray(BigInteger bi, int minSize) {
         byte[] b = bi.toByteArray()
         int newLength = b.length
-        boolean ignoreMSB = false // TODO We can simplify this logic a little, like newLength = b.length above the if, then newLength -= 1 inside the if
+        boolean ignoreMSB = false
         if (b[0] == (byte)0) { // most significant byte (sign byte) is 0 (positive), we ignore the sign byte
             newLength -= 1
             ignoreMSB = true

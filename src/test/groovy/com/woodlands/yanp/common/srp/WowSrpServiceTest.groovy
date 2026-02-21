@@ -23,7 +23,7 @@ class WowSrpServiceTest extends Specification {
         wowSrpService = new WowSrpService(secureRandom)
     }
 
-    def "GenerateChallenge"() {
+    def "GenerateChallenge produces values matching CMangos implementation"() {
         setup:
         WowSrp6Server.FAKE_B = FAKE_B
         def channel = Mock(Channel)
@@ -50,7 +50,7 @@ class WowSrpServiceTest extends Specification {
                 "00").replace(' ', '').decodeHex()
     }
 
-    def "Troubleshoot Proof Received to match CMangos"() {
+    def "Proof calculation matches CMangos implementation"() {
         setup:
         WowSrp6Server.FAKE_B = FAKE_B
         def channel = Mock(Channel)
@@ -87,11 +87,11 @@ class WowSrpServiceTest extends Specification {
         loginProofResponse.sessionKey
     }
 
-    private BigInteger fromByteString(String byteString) {
+    private static BigInteger fromByteString(String byteString) {
         new BigInteger(byteString.replace(' ', ''), 16)
     }
 
-    private BigInteger fromByteStringReverse(String byteString) {
+    private static BigInteger fromByteStringReverse(String byteString) {
         String result = ""
         def split = byteString.split(' ')
         for (int i = split.length - 1; i >=0; i--) {

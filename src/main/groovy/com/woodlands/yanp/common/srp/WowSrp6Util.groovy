@@ -153,7 +153,8 @@ class WowSrp6Util extends SRP6Util {
             K_bytes[i] = S_even_digested_bytes[j]
             K_bytes[i + 1] = S_odd_digested_bytes[j]
         }
-        return new BigInteger(1, BitUtil.reverse(K_bytes))
+        K_bytes = BitUtil.reverse(K_bytes)
+        return new BigInteger(1, K_bytes)
     }
 
     private static BigInteger hashPaddedPair(Digest digest, BigInteger N, BigInteger n1, BigInteger n2) {

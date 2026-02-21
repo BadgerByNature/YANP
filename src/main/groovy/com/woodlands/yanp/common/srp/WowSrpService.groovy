@@ -39,7 +39,7 @@ class WowSrpService {
     }
 
     byte[] generateChallenge(Channel ch, AccountEntity account) {
-        def verifier = new BigInteger(account.v, 16)
+        def verifier = new BigInteger(1, account.v.decodeHex())
         def salt = BitUtil.reverse(account.s.decodeHex())
         def I = account.username.getBytes()
         def securityFlags = (byte)0x00

@@ -33,7 +33,10 @@ import org.springframework.stereotype.Service
 /**
  * Selects the proper decoder based on the instruction/command contained in the first byte
  * and uses it to decode the ByteBuf into a standard Object for easier manipulation in the
- * MessageHandler
+ * MessageHandler.
+ * <p>
+ * If not enough bytes are found for the detected AuthCommand then we reset the readerIndex
+ * so that we'll re-read the message from the beginning when more bytes come in.
  */
 @Slf4j
 @Service
@@ -47,13 +50,12 @@ class AuthByteToMessageDecoderService extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> listOut) throws Exception {
-        // One byte should be all we need to determine the AuthCommand
-        if (byteBuf.readableBytes() < 1) {
-            log.warn('Decode called with 0 bytes')
+        // One byte should be all we need to determine the AuthCommand, but no command is shorter than 3 bytes
+        if (byteBuf.readableBytes() < 3) {
             return
         }
 
-        // Marks the reader index in case it needs to be reset - when could that happen?
+        // Marks the reader index so we can reset it until the full command bytes come in
         byteBuf.markReaderIndex()
 
         // First byte should represent the command we need to process
@@ -61,15 +63,22 @@ class AuthByteToMessageDecoderService extends ByteToMessageDecoder {
 
         AuthCommand command = AuthCommand.fromCode(commandCode)
         def decoder = authCommandDecoders.find { it -> it.handles(command) }
-        if (decoder != null) {
-            // TODO Handle failure to decode
-            // Wrap in DecodeResult<T> with success/fail and also object?
-            // Return an error result object and pass it down to the handler?
-            listOut.add(decoder.decode(byteBuf))
-            // TODO Do we need to release here?
-        } else {
-            log.error("No decoder found for packet with command code ${Integer.toHexString(commandCode)}")
-            byteBuf.resetReaderIndex()
+        if (decoder == null) {
+            log.warn("No decoder found for packet with command code ${Integer.toHexString(commandCode)}")
+            return
+        }
+
+        def result = decoder.decode(byteBuf)
+        switch (result.status) {
+            case DecodeStatus.COMPLETE:
+                listOut.add(result.message)
+                break
+            case DecodeStatus.NOT_ENOUGH_BITES:
+                byteBuf.resetReaderIndex()
+                break
+            case DecodeStatus.INVALID:
+                log.error("Decoding packet from ${channelHandlerContext.channel().remoteAddress()} resulted in status $DecodeStatus.INVALID")
+                throw new Exception('Invalid data')
         }
     }
 }

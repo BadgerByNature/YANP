@@ -65,13 +65,10 @@ class LoginRequestChallengeDecoder implements AuthCommandDecoder<LoginRequestCha
     }
 
     @Override
-    LoginRequestChallengeMessage decode(ByteBuf byteBuf) {
+    DecodeResult<LoginRequestChallengeMessage> decode(ByteBuf byteBuf) {
         log.debug('Decoding login request message')
-
         if (byteBuf.readableBytes() < COMMAND_SIZE) {
-            log.error("Incorrect packet size when decoding: $AuthCommand.CMD_AUTH_REQUEST_LOGIN_CHALLENGE")
-            byteBuf.resetReaderIndex()
-            return null
+            return new DecodeResult<>(status: DecodeStatus.NOT_ENOUGH_BITES)
         }
 
         byte error = byteBuf.readByte() // TODO Handle ERROR = True here ?
@@ -91,15 +88,14 @@ class LoginRequestChallengeDecoder implements AuthCommandDecoder<LoginRequestCha
         byte iLength = byteBuf.readByte()
         if (byteBuf.readableBytes() < iLength) {
             log.error("Incorrect packet size when decoding I (account name): $AuthCommand.CMD_AUTH_REQUEST_LOGIN_CHALLENGE")
-            byteBuf.resetReaderIndex()
-            return null
+            return new DecodeResult<>(status: DecodeStatus.INVALID)
         }
         // Every other codebase calls this `I`, which is a value designated as part of SRP6 authentication
         byte[] accountName = new byte[iLength]
         byteBuf.readBytes(accountName)
 
         // ByteBuf is converted into this AuthMessage which gets picked up in the Handler
-        new LoginRequestChallengeMessage(
+        def message = new LoginRequestChallengeMessage(
                 error: error,
                 size: size,
                 gameName: new String(gameName),
@@ -114,6 +110,10 @@ class LoginRequestChallengeDecoder implements AuthCommandDecoder<LoginRequestCha
                 ip: ip,
                 nameLength: iLength,
                 accountName: new String(accountName)
+        )
+        new DecodeResult<LoginRequestChallengeMessage>(
+                message: message,
+                status: DecodeStatus.COMPLETE
         )
     }
 }

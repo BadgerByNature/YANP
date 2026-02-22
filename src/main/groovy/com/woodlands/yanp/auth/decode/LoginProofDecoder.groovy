@@ -55,13 +55,11 @@ class LoginProofDecoder implements AuthCommandDecoder<LoginProofMessage> {
 //    } sAuthLogonProof_C;
 
     @Override
-    LoginProofMessage decode(ByteBuf byteBuf) {
+    DecodeResult<LoginProofMessage> decode(ByteBuf byteBuf) {
         log.debug('Decoding login proof message')
 
-        if (byteBuf.readableBytes() != COMMAND_SIZE) {
-            log.error("Incorrect packet size when decoding: $AuthCommand.CMD_AUTH_LOGIN_PROOF")
-            byteBuf.resetReaderIndex()
-            return null
+        if (byteBuf.readableBytes() < COMMAND_SIZE) {
+            return new DecodeResult<LoginProofMessage>(status: DecodeStatus.NOT_ENOUGH_BITES)
         }
 
         def A_bytes = new byte[A_BYTES_LENGTH]
@@ -73,12 +71,16 @@ class LoginProofDecoder implements AuthCommandDecoder<LoginProofMessage> {
         byte numberOfKeys = byteBuf.readByte()
         byte securityFlags = byteBuf.readByte()
 
-        new LoginProofMessage(
+        def message = new LoginProofMessage(
                 A: BitUtil.toBigInteger(A_bytes, true),
                 M1: BitUtil.toBigInteger(M1_bytes, true),
                 crcHash: crcHash,
                 numberOfKeys: numberOfKeys,
                 securityFlags: securityFlags
+        )
+        new DecodeResult<LoginProofMessage>(
+                message: message,
+                status: DecodeStatus.COMPLETE
         )
     }
 }

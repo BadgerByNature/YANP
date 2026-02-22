@@ -1,6 +1,6 @@
 # Contributors
 
-### Original Design
+### Original WoW Server Emulator Design
 CMaNGOS Project and its predecessors https://github.com/cmangos/ https://github.com/mangos  
 
 ### Original Java Netty Auth processing workflow, SRP6 handling, and Output writing
@@ -9,7 +9,6 @@ JavaWoW project https://github.com/JavaWoW/JavaWoW
 
 ### Conversion to Groovy
 Brandon Tracy (BadgerByNature)
-
 
 ### Redesign and Further Development
 Brandon Tracy (BadgerByNature)

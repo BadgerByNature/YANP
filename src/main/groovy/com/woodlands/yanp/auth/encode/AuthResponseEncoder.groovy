@@ -36,9 +36,7 @@ class AuthResponseEncoder extends MessageToByteEncoder<ByteBufWowPacket> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, ByteBufWowPacket msg, ByteBuf out) throws Exception {
-        log.debug('Encoding ByteBufWoWPacket')
         out.writeByte(msg.getOpCode())
         out.writeBytes(msg.getPayload())
-        log.debug('Encoded packet written to out')
     }
 }

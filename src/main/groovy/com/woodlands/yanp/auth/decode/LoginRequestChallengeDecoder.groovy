@@ -37,6 +37,7 @@ class LoginRequestChallengeDecoder implements AuthCommandDecoder<LoginRequestCha
        so this size is one less than the entire packet sent to us */
     private static final int COMMAND_SIZE = 33
     // TODO Actually the command passes in the size, we should check that we get the error and size bites, then make sure the size is correct
+    // This is because the length of the account name can vary, so we nee dynamic size-checking. Max name size is 16 bytes
 
     /* Reference From vMangos/CMangos/AzerothCore
     typedef struct AUTH_LOGON_CHALLENGE_C

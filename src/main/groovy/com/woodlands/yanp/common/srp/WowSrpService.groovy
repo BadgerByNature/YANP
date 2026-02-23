@@ -61,7 +61,7 @@ class WowSrpService {
 
     byte[] generateChallenge(Channel ch, AccountEntity account) {
         def verifier = new BigInteger(1, account.v.decodeHex())
-        def salt = BitUtil.reverse(account.s.decodeHex())
+        def salt = account.s.decodeHex()
         def I = account.username.getBytes()
         def securityFlags = (byte)0x00
 
@@ -78,7 +78,7 @@ class WowSrpService {
         byte[] N_bytes = BitUtil.toLEByteArray(N, 32)
         writer.writeByte(N_bytes.length) // Should always be 32 if we are enforcing min size, some cores hard-code it
         writer.write(N_bytes)
-        writer.write(salt)
+        writer.write(BitUtil.reverse(salt))
         writer.write(VERSION_CHALLENGE)
         writer.write(securityFlags) // security flags
         if ((securityFlags & 0x1) == 0x1) {

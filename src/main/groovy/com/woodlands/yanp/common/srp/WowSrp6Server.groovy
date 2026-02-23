@@ -21,6 +21,7 @@
 */
 package com.woodlands.yanp.common.srp
 
+import com.woodlands.yanp.common.BitUtil
 import org.bouncycastle.crypto.CryptoException
 import org.bouncycastle.crypto.Digest
 import org.bouncycastle.crypto.agreement.srp.SRP6Server
@@ -61,7 +62,7 @@ class WowSrp6Server extends SRP6Server {
     private final void initInternal(SRP6GroupParameters params, BigInteger v, byte[] I, byte[] s, Digest digest,
                                     SecureRandom random) {
         this.I = Arrays.copyOf(I, I.length)
-        this.salt = Arrays.copyOf(s, s.length)
+        this.salt = BitUtil.reverse(Arrays.copyOf(s, s.length))
         super.init(params.getN(), params.getG(), v, digest, random)
     }
 

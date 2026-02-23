@@ -26,6 +26,7 @@ import com.woodlands.yanp.auth.AuthResult
 import com.woodlands.yanp.auth.AuthServer
 import com.woodlands.yanp.auth.message.AuthMessage
 import com.woodlands.yanp.auth.message.LoginProofMessage
+import com.woodlands.yanp.auth.service.AccountService
 import com.woodlands.yanp.common.BitUtil
 import com.woodlands.yanp.common.data.PacketDataWriter
 import com.woodlands.yanp.common.network.ByteBufWowPacket
@@ -33,15 +34,18 @@ import com.woodlands.yanp.common.srp.WowSrpService
 import groovy.util.logging.Slf4j
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
+import org.bouncycastle.util.BigIntegers
 import org.springframework.stereotype.Service
 
 @Slf4j
 @Service
 class LoginProofMessageHandler implements AuthMessageHandler {
 
+    final AccountService accountService
     final WowSrpService srpService
 
-    LoginProofMessageHandler(WowSrpService srpService) {
+    LoginProofMessageHandler(AccountService accountService, WowSrpService srpService) {
+        this.accountService = accountService
         this.srpService = srpService
     }
 
@@ -54,7 +58,6 @@ class LoginProofMessageHandler implements AuthMessageHandler {
     void handle(AuthMessage message, Channel ch) {
         log.debug('Handling LoginProofMessage')
         LoginProofMessage proofMessage = (LoginProofMessage)message
-        log.debug(proofMessage.toString())
 
         ByteArrayOutputStream payload = new ByteArrayOutputStream()
         populateResponse(ch, proofMessage, payload)
@@ -89,6 +92,10 @@ class LoginProofMessageHandler implements AuthMessageHandler {
         }
 
         // TODO Set SessionKey into Account Table
+        def account = channel.attr(AuthServer.ACCOUNT).get()
+        account.sessionKey = BigIntegers.asUnsignedByteArray(response.sessionKey).encodeHex().toString()
+        accountService.save(account)
+
         // TODO Set os, locale, failed_logins, platform as well
 
         // TODO Verify version via CRC Hash

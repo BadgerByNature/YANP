@@ -21,6 +21,7 @@
 */
 package com.woodlands.yanp.auth
 
+import com.woodlands.yanp.auth.db.entity.AccountEntity
 import com.woodlands.yanp.auth.decode.AuthByteToMessageDecoderService
 import com.woodlands.yanp.auth.encode.AuthResponseEncoder
 import com.woodlands.yanp.auth.message.AuthMessage
@@ -50,6 +51,8 @@ import org.springframework.stereotype.Service
 @Slf4j
 @Service
 class AuthServer {
+    /** AttributeKey for injecting the account into the channel*/
+    public static final AttributeKey<AccountEntity> ACCOUNT = AttributeKey.newInstance("Account")
     /** AttributeKey for injecting and retrieving our WowSrp6Server into/from our Channel for use in future processing on the same channel */
     public static final AttributeKey<WowSrp6Server> SRP_ATTRIBUTE = AttributeKey.newInstance("SRP")
 
@@ -81,11 +84,10 @@ class AuthServer {
                     .group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel)
                     .childHandler(new ChannelInitializer() {
-                        // An anonymouse ChannelListener should be enough for our needs
+                        // An anonymous ChannelListener should be enough for our needs
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
-                            // Create a new AuthChannelInboundHandler here instead of autowiring
-                            // So that we can maintain state per Channel, e.g. account name and login status
+                            // Decoder cannot be set to @Shared, but the ChannelInboundHandler and Encoder can be
                             ch.pipeline().addLast("decoder", new AuthByteToMessageDecoderService(authCommandDecoders))
                             ch.pipeline().addLast(authChannelInboundHandler)
                             ch.pipeline().addLast("encoder", authResponseEncoder)

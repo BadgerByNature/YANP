@@ -46,6 +46,9 @@ class RealmListDecoder implements AuthCommandDecoder<RealmListMessage> {
             return new DecodeResult<>(status: DecodeStatus.INVALID)
         }
 
+        // Realm List sends four empty bytes after the command code
+        byteBuf.skipBytes(4)
+
         def message = new RealmListMessage()
         new DecodeResult<RealmListMessage>(status: DecodeStatus.COMPLETE, message: message)
     }

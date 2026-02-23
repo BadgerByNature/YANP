@@ -103,7 +103,7 @@ class AuthServer {
 
             ChannelFuture cf = bootstrap.bind(port).addListener(f -> {
                 if (f.isSuccess()) {
-                    log.info("Realm Server listening on port $port")
+                    log.info("Auth Server listening on port $port")
                 } else {
                     log.error("Binding to port $port failed", f.cause())
                 }

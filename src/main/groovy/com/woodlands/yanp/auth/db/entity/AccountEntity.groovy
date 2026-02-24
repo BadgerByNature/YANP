@@ -35,7 +35,7 @@ class AccountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = 'ID', nullable = false)
-    Long id
+    Integer id
 
     @JsonProperty
     @Column(name = 'USERNAME', length = 32, unique = true)

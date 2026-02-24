@@ -39,7 +39,7 @@ class BanService {
         ipBanRepository.findBannedIp(ip, Instant.now().epochSecond) != null
     }
 
-    BanStatus getAccountBanStatus(Long accountId) {
+    BanStatus getAccountBanStatus(Integer accountId) {
         def banRecord = accountBannedRepository.findByIdAndIsActive(accountId, true)
         if (!banRecord) return BanStatus.NONE
         if (banRecord.bannedAt == banRecord.expiresAt) return BanStatus.PERMANENT

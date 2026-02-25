@@ -122,17 +122,15 @@ class RealmListMessageHandler implements AuthMessageHandler {
 
     /**
      * Returns the number of realms this account is eligible for. This may not match the number of accounts
-     * sent to the client. GMs can apparently see realms with higher required security, but they show as locked.
+     * sent to the client. GMs can apparently see realms with higher required security, but they show as locked
+     * and are not counted towards 'eligible' realms
      *
      * @param gmLevel securityLevel of the account, also called gmLevel
      * @param realmList the list of realms
      * @return count of realms this user can log into in the realmList
      */
     int countEligibleRealms(int gmLevel, List<RealmEntity> realmList) {
-         if (gmLevel == 0 ) {
-             return realmList.count { it.allowedSecurityLevel == 0 }
-         }
-        return realmList.count { it.allowedSecurityLevel <= gmLevel }
+         realmList.count { gmLevel <= it.allowedSecurityLevel }
     }
 }
 

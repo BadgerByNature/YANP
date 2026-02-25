@@ -21,7 +21,7 @@
 */
 package com.woodlands.yanp.common.srp
 
-import com.woodlands.yanp.auth.AuthServer
+import com.woodlands.yanp.auth.AuthAttributeKey
 import com.woodlands.yanp.auth.db.entity.AccountEntity
 import com.woodlands.yanp.auth.message.LoginProofMessage
 import com.woodlands.yanp.auth.message.handler.LoginProofMessageHandler
@@ -69,7 +69,7 @@ class WowSrpService {
         BigInteger B = srp6Server.generateServerCredentials()
 
         // TODO Has to be done here because we need the SRP server. Bad design, refactor once things are working
-        ch.attr(AuthServer.SRP_ATTRIBUTE).set(srp6Server)
+        ch.attr(AuthAttributeKey.SRP_ATTRIBUTE).set(srp6Server)
 
         def writer = new PacketDataWriter()
         writer.write(BitUtil.toLEByteArray(B, 32))

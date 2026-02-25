@@ -18,8 +18,8 @@
 //file:noinspection GrMethodMayBeStatic
 package com.woodlands.yanp.auth.message.handler
 
+import com.woodlands.yanp.auth.AuthAttributeKey
 import com.woodlands.yanp.auth.AuthCommand
-import com.woodlands.yanp.auth.AuthServer
 import com.woodlands.yanp.auth.db.entity.RealmEntity
 import com.woodlands.yanp.auth.db.repository.RealmCharactersRepository
 import com.woodlands.yanp.auth.db.repository.RealmRepository
@@ -50,7 +50,7 @@ class RealmListMessageHandler implements AuthMessageHandler {
     void handle(AuthMessage message, Channel ch) {
         log.debug('Handling RealmListMessage')
 
-        def account = ch.attr(AuthServer.ACCOUNT).get()
+        def account = ch.attr(AuthAttributeKey.ACCOUNT).get()
         if (!account) {
             throw new Exception("Account not found on Realm List message")
         }

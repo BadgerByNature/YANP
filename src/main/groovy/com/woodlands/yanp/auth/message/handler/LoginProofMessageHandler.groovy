@@ -21,9 +21,9 @@
 */
 package com.woodlands.yanp.auth.message.handler
 
+import com.woodlands.yanp.auth.AuthAttributeKey
 import com.woodlands.yanp.auth.AuthCommand
 import com.woodlands.yanp.auth.AuthResult
-import com.woodlands.yanp.auth.AuthServer
 import com.woodlands.yanp.auth.message.AuthMessage
 import com.woodlands.yanp.auth.message.LoginProofMessage
 import com.woodlands.yanp.auth.service.AccountService
@@ -69,7 +69,7 @@ class LoginProofMessageHandler implements AuthMessageHandler {
     }
 
     void populateResponse(Channel channel, LoginProofMessage message, ByteArrayOutputStream payload) {
-        def srpServer = channel.attr(AuthServer.SRP_ATTRIBUTE).get()
+        def srpServer = channel.attr(AuthAttributeKey.SRP_ATTRIBUTE).get()
 
         // This should only happen if using a hacked client or direct socket connection to attempt to bypass security
         // If you went through the LoginChallenge already this will be here
@@ -92,7 +92,7 @@ class LoginProofMessageHandler implements AuthMessageHandler {
         }
 
         // TODO Set SessionKey into Account Table
-        def account = channel.attr(AuthServer.ACCOUNT).get()
+        def account = channel.attr(AuthAttributeKey.ACCOUNT).get()
         account.sessionKey = BigIntegers.asUnsignedByteArray(response.sessionKey).encodeHex().toString()
         accountService.save(account)
 

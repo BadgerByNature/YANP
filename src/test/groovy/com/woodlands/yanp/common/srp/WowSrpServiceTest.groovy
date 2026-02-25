@@ -17,7 +17,7 @@
 */
 package com.woodlands.yanp.common.srp
 
-import com.woodlands.yanp.auth.AuthServer
+import com.woodlands.yanp.auth.AuthAttributeKey
 import com.woodlands.yanp.auth.db.entity.AccountEntity
 import com.woodlands.yanp.auth.message.LoginProofMessage
 import io.netty.channel.Channel
@@ -45,7 +45,7 @@ class WowSrpServiceTest extends Specification {
         WowSrp6Server.FAKE_B = FAKE_B
         def channel = Mock(Channel)
         def attribute = Mock(Attribute)
-        channel.attr(AuthServer.SRP_ATTRIBUTE) >> attribute
+        channel.attr(AuthAttributeKey.SRP_ATTRIBUTE) >> attribute
         def account = new AccountEntity(
                 s: 'F34034494262040664D1FA8F870051CE6BC8A6CD83EFAC353200053A4DDED8D5',
                 v: '6F8CD45AA99E82E0DCBE120FBA52E38DBA5151D040E8CD297C9CC2DEDAAF629A',
@@ -72,7 +72,7 @@ class WowSrpServiceTest extends Specification {
         WowSrp6Server.FAKE_B = FAKE_B
         def channel = Mock(Channel)
         def attribute = Mock(Attribute<WowSrp6Server>)
-        channel.attr(AuthServer.SRP_ATTRIBUTE) >> attribute
+        channel.attr(AuthAttributeKey.SRP_ATTRIBUTE) >> attribute
         def account = new AccountEntity(
                 s: 'F34034494262040664D1FA8F870051CE6BC8A6CD83EFAC353200053A4DDED8D5',
                 v: '6F8CD45AA99E82E0DCBE120FBA52E38DBA5151D040E8CD297C9CC2DEDAAF629A',

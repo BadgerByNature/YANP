@@ -62,6 +62,8 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
         log.debug('Handling LoginRequestMessage')
         LoginRequestChallengeMessage requestMessage = (LoginRequestChallengeMessage)message
 
+        ch.attr(AuthAttributeKey.BUILD).set(requestMessage.build)
+
         // Payload includes everything after the opCode
         ByteArrayOutputStream payload = new ByteArrayOutputStream()
 

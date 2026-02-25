@@ -25,6 +25,7 @@ import com.woodlands.yanp.auth.db.repository.RealmCharactersRepository
 import com.woodlands.yanp.auth.db.repository.RealmRepository
 import com.woodlands.yanp.auth.message.AuthMessage
 import com.woodlands.yanp.auth.message.RealmListMessage
+import com.woodlands.yanp.auth.model.BuildInfo
 import com.woodlands.yanp.common.data.PacketDataWriter
 import com.woodlands.yanp.common.network.ByteBufWowPacket
 import groovy.util.logging.Slf4j
@@ -78,11 +79,16 @@ class RealmListMessageHandler implements AuthMessageHandler {
             realmInfosWriter.writeByte(characterCount)
             realmInfosWriter.writeByte(getRealmZoneFromTimezone(realm.timezone)) // This is really the realm zone or realm category, e.g. US or Oceanic
             realmInfosWriter.writeByte(0x2c) // CMangos just always writes 0x2c. ACore writes field[0]'s id, which sounds like the database id - that seems like info the client should not see
-            // TODO Get real Build info - required when realmflags include 0x04 'SPECIFYBUILD'
-//            realmWriter.writeByte(0x02) // Realm major version
-//            realmWriter.writeByte(0x04) // Realm minor version
-//            realmWriter.writeByte(0x03) // Patch version
-//            realmWriter.writeShortLE(8606) // Build number/identifier
+            if (realm.realmFlags & 0x04) {
+                BuildInfo buildInfo
+                Integer clientBuild = ch.attr(AuthAttributeKey.BUILD).get()
+                if (clientBuild != null && (buildInfo = BuildInfo.BUILDS.get(clientBuild))) {
+                    realmInfosWriter.writeByte(buildInfo.majorVersion) // Realm major version
+                    realmInfosWriter.writeByte(buildInfo.minorVersion) // Realm minor version
+                    realmInfosWriter.writeByte(buildInfo.bugfixVersion) // Patch version
+                    realmInfosWriter.writeShortLE(clientBuild) // Build number/identifier, 8606 for TBC 2.4.3
+                }
+            }
         }
         realmInfosWriter.writeShortLE(0x0010)
 

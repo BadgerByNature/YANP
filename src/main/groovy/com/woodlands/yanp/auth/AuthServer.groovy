@@ -70,9 +70,21 @@ class AuthServer {
     private static final EventLoopGroup bossGroup = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory())
     private static final EventLoopGroup workerGroup = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory())
 
-    /** Initialize the AuthServer. Runs on PostConstruct */
+    /** Initialize the AuthServer. Runs on PostConstruct. Wraps Netty launch in a separate thread so that it starts asynchronously,
+     *  because Spring doesn't like it when PostConstruct doesn't complete for a bean */
     @PostConstruct
     void init() {
+        new Thread(() -> {
+            try {
+                startNetty()
+            } catch (Exception e) {
+                log.error('Exception from Netty Server thread', e)
+                e.printStackTrace()
+            }
+        }).start()
+    }
+
+    void startNetty() {
         try {
             ServerBootstrap bootstrap = new ServerBootstrap()
                     .group(bossGroup, workerGroup)

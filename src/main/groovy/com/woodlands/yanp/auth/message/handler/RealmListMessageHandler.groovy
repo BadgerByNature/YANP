@@ -136,7 +136,7 @@ class RealmListMessageHandler implements AuthMessageHandler {
      * @return count of realms this user can log into in the realmList
      */
     int countEligibleRealms(int gmLevel, List<RealmEntity> realmList) {
-         realmList.count { gmLevel <= it.allowedSecurityLevel }
+         realmList.count { gmLevel >= it.allowedSecurityLevel }
     }
 }
 

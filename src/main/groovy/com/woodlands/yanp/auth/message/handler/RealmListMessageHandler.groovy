@@ -66,6 +66,8 @@ class RealmListMessageHandler implements AuthMessageHandler {
             // Players can't see any realms with increased security levels
             if (account.gmLevel == 0 && realm.allowedSecurityLevel > 0) continue
             // GMs can apparently see realms at a higher security level than themselves in the list, but these realms show as locked
+            // TODO Testing this seems to not work very well. Keeps not fully connecting to the world server, world server seems to keep crashing
+            // Should investigate later, might be an important feature for development purposes
             def locked = realm.allowedSecurityLevel > account.gmLevel
             // Get the character count for this account at this specific realm
             def characterCount = realmCharacters.find { it.realmId == realm.id }.with { it.count }

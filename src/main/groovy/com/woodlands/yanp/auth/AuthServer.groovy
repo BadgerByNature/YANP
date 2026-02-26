@@ -21,10 +21,10 @@
 */
 package com.woodlands.yanp.auth
 
+
 import com.woodlands.yanp.auth.decode.AuthByteToMessageDecoderService
 import com.woodlands.yanp.auth.encode.AuthResponseEncoder
 import com.woodlands.yanp.auth.message.AuthMessage
-import com.woodlands.yanp.common.srp.WowSrp6Server
 import groovy.util.logging.Slf4j
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.buffer.PooledByteBufAllocator
@@ -36,7 +36,6 @@ import io.netty.channel.EventLoopGroup
 import io.netty.channel.MultiThreadIoEventLoopGroup
 import io.netty.channel.nio.NioIoHandler
 import io.netty.channel.socket.nio.NioServerSocketChannel
-import io.netty.util.AttributeKey
 import io.netty.util.NetUtil
 import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Value
@@ -50,8 +49,6 @@ import org.springframework.stereotype.Service
 @Slf4j
 @Service
 class AuthServer {
-    /** AttributeKey for injecting and retrieving our WowSrp6Server into/from our Channel for use in future processing on the same channel */
-    public static final AttributeKey<WowSrp6Server> SRP_ATTRIBUTE = AttributeKey.newInstance("SRP")
 
     private final AuthChannelInboundHandler authChannelInboundHandler
     private final AuthResponseEncoder authResponseEncoder
@@ -81,11 +78,10 @@ class AuthServer {
                     .group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel)
                     .childHandler(new ChannelInitializer() {
-                        // An anonymouse ChannelListener should be enough for our needs
+                        // An anonymous ChannelListener should be enough for our needs
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
-                            // Create a new AuthChannelInboundHandler here instead of autowiring
-                            // So that we can maintain state per Channel, e.g. account name and login status
+                            // Decoder cannot be set to @Shared, but the ChannelInboundHandler and Encoder can be
                             ch.pipeline().addLast("decoder", new AuthByteToMessageDecoderService(authCommandDecoders))
                             ch.pipeline().addLast(authChannelInboundHandler)
                             ch.pipeline().addLast("encoder", authResponseEncoder)
@@ -101,7 +97,7 @@ class AuthServer {
 
             ChannelFuture cf = bootstrap.bind(port).addListener(f -> {
                 if (f.isSuccess()) {
-                    log.info("Realm Server listening on port $port")
+                    log.info("Auth Server listening on port $port")
                 } else {
                     log.error("Binding to port $port failed", f.cause())
                 }

@@ -79,8 +79,8 @@ class LoginRequestChallengeDecoder implements AuthCommandDecoder<LoginRequestCha
         byte minorVersion = byteBuf.readByte()
         byte patchVersion = byteBuf.readByte()
         short build = byteBuf.readShortLE()
-        byte[] arch = BitUtil.readLECString(byteBuf, 4);
-        byte[] os = BitUtil.readLECString(byteBuf, 4);
+        byte[] arch = BitUtil.readLECString(byteBuf, 4)
+        byte[] os = BitUtil.readLECString(byteBuf, 4)
         byte[] locale = new byte[4]
         byteBuf.readBytes(locale)
         BitUtil.reverseBuffer(locale)

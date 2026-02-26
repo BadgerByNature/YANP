@@ -21,6 +21,7 @@
 */
 package com.woodlands.yanp.auth.message.handler
 
+import com.woodlands.yanp.auth.AuthAttributeKey
 import com.woodlands.yanp.auth.AuthCommand
 import com.woodlands.yanp.auth.AuthResult
 import com.woodlands.yanp.auth.constant.BanStatus
@@ -43,6 +44,8 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
     final BanService banService
     final WowSrpService srpService
 
+    // TODO Try removing database access in this class to see if we can get rid of the error in realmlist?
+
     LoginRequestChallengeMessageHandler(AccountService accountService, BanService banService, WowSrpService srpService) {
         this.accountService = accountService
         this.banService = banService
@@ -59,7 +62,7 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
         log.debug('Handling LoginRequestMessage')
         LoginRequestChallengeMessage requestMessage = (LoginRequestChallengeMessage)message
 
-        log.debug(requestMessage.toString())
+        ch.attr(AuthAttributeKey.BUILD).set(requestMessage.build)
 
         // Payload includes everything after the opCode
         ByteArrayOutputStream payload = new ByteArrayOutputStream()
@@ -114,6 +117,8 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
         }
 
         byte[] challengePayload = srpService.generateChallenge(ch, account)
+
+        ch.attr(AuthAttributeKey.ACCOUNT).set(account)
 
         payload.write(AuthResult.WOW_SUCCESS.code)
         payload.writeBytes(challengePayload)

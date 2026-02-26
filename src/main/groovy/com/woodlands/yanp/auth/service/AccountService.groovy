@@ -33,4 +33,8 @@ class AccountService {
     AccountEntity getAccount(String accountName) {
         repository.findByUsername(accountName)
     }
+
+    AccountEntity save(AccountEntity entity) {
+        repository.save(entity)
+    }
 }

@@ -49,6 +49,10 @@ class PacketDataWriter {
         baos.write((byte) b)
     }
 
+    final void writeByte(boolean b) {
+        baos.write(b ? 1 : 0)
+    }
+
     final void writeShortLE(int i) {
         baos.write((byte) (i & 0xFF))
         baos.write((byte) ((i >>> 8) & 0xFF))

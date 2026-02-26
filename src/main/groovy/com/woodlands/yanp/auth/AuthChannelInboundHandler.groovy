@@ -62,7 +62,6 @@ class AuthChannelInboundHandler extends ChannelInboundHandlerAdapter {
                 it.handles(msg)
             }.handle(msg, ctx.channel())
         }
-        // TODO Do we need to release the underlying ByteBuf at this point? At any point?
     }
 
     @Override

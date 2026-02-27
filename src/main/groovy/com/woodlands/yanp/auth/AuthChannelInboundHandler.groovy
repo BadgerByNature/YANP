@@ -21,6 +21,7 @@
 */
 package com.woodlands.yanp.auth
 
+import com.woodlands.yanp.auth.constant.AuthStatus
 import com.woodlands.yanp.auth.message.AuthMessage
 import com.woodlands.yanp.auth.message.handler.AuthMessageHandler
 import groovy.util.logging.Slf4j
@@ -52,6 +53,8 @@ class AuthChannelInboundHandler extends ChannelInboundHandlerAdapter {
     @Override
     final void channelActive(ChannelHandlerContext ctx) throws Exception {
         log.debug("IoSession opened with ${ctx.channel().remoteAddress()}")
+        // Automatically set as 'Challenge' when first connecting - could be LogonChallenge or ReconnectChallenge
+        ctx.channel().attr(AuthAttributeKey.STATUS).set(AuthStatus.CHALLENGE)
     }
 
     @Override

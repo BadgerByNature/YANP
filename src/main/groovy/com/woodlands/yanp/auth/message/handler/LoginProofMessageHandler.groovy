@@ -24,6 +24,7 @@ package com.woodlands.yanp.auth.message.handler
 import com.woodlands.yanp.auth.AuthAttributeKey
 import com.woodlands.yanp.auth.AuthCommand
 import com.woodlands.yanp.auth.AuthResult
+import com.woodlands.yanp.auth.constant.AuthStatus
 import com.woodlands.yanp.auth.message.AuthMessage
 import com.woodlands.yanp.auth.message.LoginProofMessage
 import com.woodlands.yanp.auth.service.AccountService
@@ -100,6 +101,7 @@ class LoginProofMessageHandler implements AuthMessageHandler {
 
         // TODO Verify version via CRC Hash
 
+        channel.attr(AuthAttributeKey.STATUS).set(AuthStatus.AUTHED)
 
         // TODO Validate M2 size not greater than 20?
         payload.write(AuthResult.WOW_SUCCESS.code)

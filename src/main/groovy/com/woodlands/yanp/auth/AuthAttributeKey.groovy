@@ -17,15 +17,18 @@
  */
 package com.woodlands.yanp.auth
 
+import com.woodlands.yanp.auth.constant.AuthStatus
 import com.woodlands.yanp.auth.db.entity.AccountEntity
 import com.woodlands.yanp.common.srp.WowSrp6Server
 import io.netty.util.AttributeKey
 
 class AuthAttributeKey {
     /** AttributeKey for injecting the account into the channel*/
-    public static final AttributeKey<AccountEntity> ACCOUNT = AttributeKey.newInstance("Account")
+    public static final AttributeKey<AccountEntity> ACCOUNT = AttributeKey.newInstance('Account')
     /** AttributeKey for injecting and retrieving our WowSrp6Server into/from our Channel for use in future processing on the same channel */
-    public static final AttributeKey<WowSrp6Server> SRP_ATTRIBUTE = AttributeKey.newInstance("SRP")
+    public static final AttributeKey<WowSrp6Server> SRP_ATTRIBUTE = AttributeKey.newInstance('SRP')
     /** AttributeKey for injecting build information into the channel for later steps to use */
-    public static final AttributeKey<Short> BUILD = AttributeKey.newInstance("Build")
+    public static final AttributeKey<Short> BUILD = AttributeKey.newInstance('Build')
+    /** AttributeKey for injecting current Auth Status into the channel */
+    public static final AttributeKey<AuthStatus> STATUS = AttributeKey.newInstance('Auth Status')
 }

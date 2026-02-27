@@ -24,6 +24,7 @@ package com.woodlands.yanp.auth.message.handler
 import com.woodlands.yanp.auth.AuthAttributeKey
 import com.woodlands.yanp.auth.AuthCommand
 import com.woodlands.yanp.auth.AuthResult
+import com.woodlands.yanp.auth.constant.AuthStatus
 import com.woodlands.yanp.auth.constant.BanStatus
 import com.woodlands.yanp.auth.message.AuthMessage
 import com.woodlands.yanp.auth.message.LoginRequestChallengeMessage
@@ -119,6 +120,7 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
         byte[] challengePayload = srpService.generateChallenge(ch, account)
 
         ch.attr(AuthAttributeKey.ACCOUNT).set(account)
+        ch.attr(AuthAttributeKey.STATUS).set(AuthStatus.LOGIN_PROOF)
 
         payload.write(AuthResult.WOW_SUCCESS.code)
         payload.writeBytes(challengePayload)

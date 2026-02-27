@@ -21,8 +21,10 @@
  */
 package com.woodlands.yanp.auth.decode
 
+import com.woodlands.yanp.auth.AuthAttributeKey
 import com.woodlands.yanp.auth.AuthCommand
 import com.woodlands.yanp.auth.AuthCommandDecoder
+import com.woodlands.yanp.auth.constant.AuthStatus
 import com.woodlands.yanp.auth.message.AuthMessage
 import groovy.util.logging.Slf4j
 import io.netty.buffer.ByteBuf
@@ -62,6 +64,12 @@ class AuthByteToMessageDecoderService extends ByteToMessageDecoder {
         byte commandCode = byteBuf.readByte()
 
         AuthCommand command = AuthCommand.fromCode(commandCode)
+        AuthStatus currentAuthStatus = channelHandlerContext.channel().attr(AuthAttributeKey.STATUS).get()
+        if (currentAuthStatus != command.expectedAuthStatus) {
+            log.warn("Unexpected auth status found")
+            return
+        }
+
         def decoder = authCommandDecoders.find { it -> it.handles(command) }
         if (decoder == null) {
             log.warn("No decoder found for packet with command code ${Integer.toHexString(commandCode)}")

@@ -42,7 +42,7 @@ class WowSrpServiceTest extends Specification {
 
     def "GenerateChallenge produces values matching CMangos implementation"() {
         setup:
-        WowSrp6Server.FAKE_B = FAKE_B
+        WowSrp6Server.TEST_B = FAKE_B
         def channel = Mock(Channel)
         def attribute = Mock(Attribute)
         channel.attr(AuthAttributeKey.SRP_ATTRIBUTE) >> attribute
@@ -69,7 +69,7 @@ class WowSrpServiceTest extends Specification {
 
     def "Proof calculation matches CMangos implementation"() {
         setup:
-        WowSrp6Server.FAKE_B = FAKE_B
+        WowSrp6Server.TEST_B = FAKE_B
         def channel = Mock(Channel)
         def attribute = Mock(Attribute<WowSrp6Server>)
         channel.attr(AuthAttributeKey.SRP_ATTRIBUTE) >> attribute

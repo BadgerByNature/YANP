@@ -41,7 +41,7 @@ class WowSrp6Server extends SRP6Server {
 
     // TODO Remove this once we have a fully working implementation
     /** For testing/troubleshooting purposes when we need a KNOWN "random" to reproduce expected results */
-    static BigInteger FAKE_B = null //new BigInteger("fc009cec3a0c60324f1ed1f37916fb4ad36571", 16)
+    static BigInteger TEST_B = null //new BigInteger("fc009cec3a0c60324f1ed1f37916fb4ad36571", 16)
 
     byte[] I // Account name as byte array
     byte[] salt // Salt
@@ -84,8 +84,8 @@ class WowSrp6Server extends SRP6Server {
     @Override
     final BigInteger generateServerCredentials() {
         BigInteger k = BigInteger.valueOf(3) // k = 3 for legacy SRP-6
-        if (FAKE_B) {
-            this.b = FAKE_B
+        if (TEST_B) {
+            this.b = TEST_B
         } else {
             this.b = selectPrivateValue()
         }

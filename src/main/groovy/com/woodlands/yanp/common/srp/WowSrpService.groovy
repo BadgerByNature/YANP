@@ -48,7 +48,7 @@ class WowSrpService {
     /** The 'Generator' of the multiplicative group */
     private static final BigInteger g = BigInteger.valueOf(7)
     /** Just a holder for the Safe Prime and Generator */
-    private static final SRP6GroupParameters params = new SRP6GroupParameters(N, g)
+    static final SRP6GroupParameters srpParams = new SRP6GroupParameters(N, g)
     /** Byte array that somehow represents a version challenge. Hard-coded this way in every *Mangos impl and AzerothCore */
     public static final byte[] VERSION_CHALLENGE =
             [ 0xBA, 0xA3, 0x1E, 0x99, 0xA0, 0x0B, 0x21, 0x57, 0xFC, 0x37, 0x3F, 0xB3, 0x69, 0xCD, 0xD2, 0xF1 ]
@@ -65,7 +65,7 @@ class WowSrpService {
         def I = account.username.getBytes()
         def securityFlags = (byte)0x00
 
-        WowSrp6Server srp6Server = WowSrp6Server.init(params, verifier, I, salt, new SHA1Digest(), secureRandom)
+        WowSrp6Server srp6Server = WowSrp6Server.init(srpParams, verifier, I, salt, new SHA1Digest(), secureRandom)
         BigInteger B = srp6Server.generateServerCredentials()
 
         // TODO Has to be done here because we need the SRP server. Bad design, refactor once things are working

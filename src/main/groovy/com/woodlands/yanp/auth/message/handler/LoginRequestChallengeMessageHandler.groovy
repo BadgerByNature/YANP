@@ -45,8 +45,6 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
     final BanService banService
     final WowSrpService srpService
 
-    // TODO Try removing database access in this class to see if we can get rid of the error in realmlist?
-
     LoginRequestChallengeMessageHandler(AccountService accountService, BanService banService, WowSrpService srpService) {
         this.accountService = accountService
         this.banService = banService

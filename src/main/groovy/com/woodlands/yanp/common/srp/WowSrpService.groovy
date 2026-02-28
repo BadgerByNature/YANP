@@ -104,6 +104,7 @@ class WowSrpService {
 
         def response = new LoginProofMessageHandler.LoginProofResponse()
         def S = srp6Server.calculateSecret(loginProofMessage.A)
+        srp6Server.calculateSessionKey()
         if (!srp6Server.verifyClientEvidenceMessage(loginProofMessage.M1)) {
             return null // TODO Don't like this
         }

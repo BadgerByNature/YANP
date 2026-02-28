@@ -120,11 +120,11 @@ class WowSrp6Server extends SRP6Server {
     @Override
     final boolean verifyClientEvidenceMessage(BigInteger clientM1) throws CryptoException {
         // Verify pre-requirements
-        if (this.A == null || this.B == null || this.S == null) {
-            throw new CryptoException("Impossible to compute and verify M1: some data are missing from the previous operations (A,B,S)")
+        if (this.A == null || this.B == null || this.Key == null) {
+            throw new CryptoException("Impossible to compute and verify M1: some data are missing from the previous operations (A,B,Key)")
         }
         // Compute the own client evidence message 'M1'
-        BigInteger computedM1 = WowSrp6Util.calculateM1(digest, N, g, I, salt, A, B, S)
+        BigInteger computedM1 = WowSrp6Util.calculateM1(digest, N, g, I, salt, A, B, Key)
         if (computedM1 == clientM1) {
             this.M1 = clientM1
             return true
@@ -160,8 +160,8 @@ class WowSrp6Server extends SRP6Server {
     @Override
     final BigInteger calculateSessionKey() throws CryptoException {
         // Verify pre-requirements
-        if (this.S == null || this.M1 == null || this.M2 == null) {
-            throw new CryptoException("Impossible to compute Key: " + "some data are missing from the previous operations (S,M1,M2)")
+        if (this.S == null) {
+            throw new CryptoException("Impossible to compute Key: " + "some data are missing from the previous operations (S)")
         }
         this.Key = WowSrp6Util.calculateKey(digest, S)
         return Key

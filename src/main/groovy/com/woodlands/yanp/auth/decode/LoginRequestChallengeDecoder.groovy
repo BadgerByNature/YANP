@@ -22,16 +22,14 @@
 package com.woodlands.yanp.auth.decode
 
 import com.woodlands.yanp.auth.AuthCommand
-import com.woodlands.yanp.auth.AuthCommandDecoder
-import com.woodlands.yanp.auth.message.LoginRequestChallengeMessage
-import com.woodlands.yanp.common.BitUtil
+import com.woodlands.yanp.auth.message.RequestChallengeMessage
 import groovy.util.logging.Slf4j
 import io.netty.buffer.ByteBuf
 import org.springframework.stereotype.Service
 
 @Slf4j
 @Service
-class LoginRequestChallengeDecoder implements AuthCommandDecoder<LoginRequestChallengeMessage> {
+class LoginRequestChallengeDecoder extends RequestChallengeDecoder {
 
     /* We assume for the decoder that we've already read the first byte containing the command,
        so this size is one less than the entire packet sent to us */
@@ -66,55 +64,13 @@ class LoginRequestChallengeDecoder implements AuthCommandDecoder<LoginRequestCha
     }
 
     @Override
-    DecodeResult<LoginRequestChallengeMessage> decode(ByteBuf byteBuf) {
-        log.debug('Decoding login request message')
-        if (byteBuf.readableBytes() < COMMAND_SIZE) {
-            return new DecodeResult<>(status: DecodeStatus.NOT_ENOUGH_BITES)
+    DecodeResult<RequestChallengeMessage> decode(ByteBuf byteBuf) {
+        def result = super.decode(byteBuf)
+        if (result.status != DecodeStatus.COMPLETE) {
+            return result
         }
 
-        byte error = byteBuf.readByte() // TODO Handle ERROR = True here ?
-        short size = byteBuf.readShortLE() // TODO Handle size not matching the rest of the body
-        byte[] gameName = BitUtil.readLECString(byteBuf, 4)
-        byte majorVersion = byteBuf.readByte()
-        byte minorVersion = byteBuf.readByte()
-        byte patchVersion = byteBuf.readByte()
-        short build = byteBuf.readShortLE()
-        byte[] arch = BitUtil.readLECString(byteBuf, 4)
-        byte[] os = BitUtil.readLECString(byteBuf, 4)
-        byte[] locale = new byte[4]
-        byteBuf.readBytes(locale)
-        BitUtil.reverseBuffer(locale)
-        int timezone = byteBuf.readIntLE()
-        int ip = byteBuf.readIntLE()
-        byte iLength = byteBuf.readByte()
-        if (byteBuf.readableBytes() < iLength) {
-            log.error("Incorrect packet size when decoding I (account name): $AuthCommand.CMD_AUTH_REQUEST_LOGIN_CHALLENGE")
-            return new DecodeResult<>(status: DecodeStatus.INVALID)
-        }
-        // Every other codebase calls this `I`, which is a value designated as part of SRP6 authentication
-        byte[] accountName = new byte[iLength]
-        byteBuf.readBytes(accountName)
-
-        // ByteBuf is converted into this AuthMessage which gets picked up in the Handler
-        def message = new LoginRequestChallengeMessage(
-                error: error,
-                size: size,
-                gameName: new String(gameName),
-                majorVersion: majorVersion,
-                minorVersion: minorVersion,
-                patchVersion: patchVersion,
-                build: build,
-                arch: new String(arch),
-                os: new String(os),
-                locale: new String(locale),
-                timezone: timezone,
-                ip: ip,
-                nameLength: iLength,
-                accountName: new String(accountName)
-        )
-        new DecodeResult<LoginRequestChallengeMessage>(
-                message: message,
-                status: DecodeStatus.COMPLETE
-        )
+        result.message.command = AuthCommand.CMD_AUTH_REQUEST_LOGIN_CHALLENGE
+        result
     }
 }

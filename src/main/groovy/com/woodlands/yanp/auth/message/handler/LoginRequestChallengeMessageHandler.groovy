@@ -27,7 +27,7 @@ import com.woodlands.yanp.auth.AuthResult
 import com.woodlands.yanp.auth.constant.AuthStatus
 import com.woodlands.yanp.auth.constant.BanStatus
 import com.woodlands.yanp.auth.message.AuthMessage
-import com.woodlands.yanp.auth.message.LoginRequestChallengeMessage
+import com.woodlands.yanp.auth.message.RequestChallengeMessage
 import com.woodlands.yanp.auth.service.AccountService
 import com.woodlands.yanp.auth.service.BanService
 import com.woodlands.yanp.common.BitUtil
@@ -70,13 +70,13 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
 
     @Override
     boolean handles(AuthMessage message) {
-        return message instanceof LoginRequestChallengeMessage
+        return message instanceof RequestChallengeMessage && message.command == AuthCommand.CMD_AUTH_REQUEST_LOGIN_CHALLENGE
     }
 
     @Override
     void handle(AuthMessage message, Channel ch) {
         log.debug('Handling LoginRequestMessage')
-        LoginRequestChallengeMessage requestMessage = (LoginRequestChallengeMessage)message
+        RequestChallengeMessage requestMessage = (RequestChallengeMessage)message
 
         ch.attr(AuthAttributeKey.BUILD).set(requestMessage.build)
 
@@ -92,7 +92,7 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
         )
     }
 
-    void populateResponse(Channel ch, LoginRequestChallengeMessage message, ByteArrayOutputStream payload) {
+    void populateResponse(Channel ch, RequestChallengeMessage message, ByteArrayOutputStream payload) {
 
         payload.write(0) // Unknown Use - just a spacer?
 

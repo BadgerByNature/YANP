@@ -20,7 +20,7 @@ package com.woodlands.yanp.auth.message.handler
 import com.woodlands.yanp.auth.AuthAttributeKey
 import com.woodlands.yanp.auth.constant.BanStatus
 import com.woodlands.yanp.auth.db.entity.AccountEntity
-import com.woodlands.yanp.auth.message.LoginRequestChallengeMessage
+import com.woodlands.yanp.auth.message.RequestChallengeMessage
 import com.woodlands.yanp.auth.service.AccountService
 import com.woodlands.yanp.auth.service.BanService
 import com.woodlands.yanp.common.srp.WowSrp6Server
@@ -68,7 +68,7 @@ class LoginRequestChallengeMessageHandlerTest extends Specification {
             channel.attr(AuthAttributeKey.ACCOUNT) >> attribute
             channel.attr(AuthAttributeKey.STATUS) >> attribute
 
-            def requestChallengeMessage = new LoginRequestChallengeMessage(accountName: 'TEST')
+            def requestChallengeMessage = new RequestChallengeMessage(accountName: 'TEST')
             def payload = new ByteArrayOutputStream()
 
             when:

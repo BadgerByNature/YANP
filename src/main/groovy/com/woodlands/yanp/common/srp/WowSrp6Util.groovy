@@ -31,36 +31,8 @@ import java.security.SecureRandom
 
 class WowSrp6Util extends SRP6Util {
 
-    // TODO Why does this overwrite so many default methods? Is the reversing of these BigIntegers necessary?
-    // Where does it come into play? Experiment once we have login working
-    private WoWSRP6Util() {}
-
-    static BigInteger calculateK(Digest digest, BigInteger N, BigInteger g) {
-        return hashPaddedPair(digest, N, N, g)
-    }
-
     static BigInteger calculateU(Digest digest, BigInteger N, BigInteger A, BigInteger B) {
         return hashPaddedPair(digest, N, A, B)
-    }
-
-    static BigInteger calculateX(Digest digest, BigInteger N, byte[] salt, byte[] identity, byte[] password) {
-        byte[] output = new byte[digest.getDigestSize()]
-        digest.update(identity, 0, identity.length)
-        digest.update((byte)(':' as char))
-        digest.update(password, 0, password.length)
-        digest.doFinal(output, 0)
-        digest.update(salt, 0, salt.length)
-        digest.update(output, 0, output.length)
-        digest.doFinal(output, 0)
-        output = BitUtil.reverse(output)
-        return new BigInteger(1, output)
-    }
-
-    static BigInteger generatePrivateValue(Digest digest, BigInteger N, BigInteger g, SecureRandom random) {
-        int minBits = Math.min(256, N.bitLength() / 2)
-        BigInteger min = BigInteger.ONE.shiftLeft(minBits - 1)
-        BigInteger max = N.subtract(BigInteger.ONE)
-        return BigIntegers.createRandomInRange(min, max, random)
     }
 
     static BigInteger validatePublicValue(BigInteger N, BigInteger val) throws CryptoException {
@@ -84,8 +56,7 @@ class WowSrp6Util extends SRP6Util {
      * @return M1 The calculated client evidence message
      */
     static BigInteger calculateM1(Digest digest, BigInteger N, BigInteger g, byte[] I, byte[] salt, BigInteger A,
-                                  BigInteger B, BigInteger S) {
-        BigInteger K = calculateKey(digest, N, S)
+                                  BigInteger B, BigInteger Key) {
         int padLength = (N.bitLength() + 7) / 8
         byte[] N_bytes = BitUtil.reverse(getPadded(N, padLength))
         digest.update(N_bytes, 0, N_bytes.length)
@@ -104,7 +75,7 @@ class WowSrp6Util extends SRP6Util {
         digest.doFinal(I_digested, 0)
         byte[] A_bytes = BitUtil.reverse(getPadded(A, padLength))
         byte[] B_bytes = BitUtil.reverse(getPadded(B, padLength))
-        byte[] K_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(K))
+        byte[] K_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(Key))
         // Add in the bytes now
         digest.update(product, 0, product.length) // H( N ) ^ H( g )
         digest.update(I_digested, 0, I_digested.length) // H( I )
@@ -126,15 +97,14 @@ class WowSrp6Util extends SRP6Util {
      * @param N Modulus used to get the pad length
      * @param A The public client value
      * @param M1 The client evidence message
-     * @param S The secret calculated by both sides
+     * @param Key The session key
      * @return M2 The calculated server evidence message
      */
-    static BigInteger calculateM2(Digest digest, BigInteger N, BigInteger A, BigInteger M1, BigInteger S) {
-        BigInteger K = calculateKey(digest, N, S)
+    static BigInteger calculateM2(Digest digest, BigInteger N, BigInteger A, BigInteger M1, BigInteger Key) {
         int padLength = (N.bitLength() + 7) / 8
         byte[] A_bytes = BitUtil.reverse(getPadded(A, padLength))
         byte[] M1_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(M1))
-        byte[] K_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(K))
+        byte[] K_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(Key))
         digest.update(A_bytes, 0, A_bytes.length) // A
         digest.update(M1_bytes, 0, M1_bytes.length) // M1
         digest.update(K_bytes, 0, K_bytes.length) // K
@@ -152,7 +122,7 @@ class WowSrp6Util extends SRP6Util {
      * @param S The secret calculated by both sides
      * @return
      */
-    static BigInteger calculateKey(Digest digest, BigInteger N, BigInteger S) { // TODO Why is N unused here? Why are the odd and even bites hashed separately?
+    static BigInteger calculateKey(Digest digest, BigInteger S) {
         // Take S and convert it into a little-endian byte array
         byte[] S_le = BitUtil.toLEByteArray(S, 32)
         byte[] S_even_bytes = new byte[16]

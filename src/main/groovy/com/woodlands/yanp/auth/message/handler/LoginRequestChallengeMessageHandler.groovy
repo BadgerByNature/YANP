@@ -30,27 +30,42 @@ import com.woodlands.yanp.auth.message.AuthMessage
 import com.woodlands.yanp.auth.message.LoginRequestChallengeMessage
 import com.woodlands.yanp.auth.service.AccountService
 import com.woodlands.yanp.auth.service.BanService
+import com.woodlands.yanp.common.BitUtil
+import com.woodlands.yanp.common.data.PacketDataWriter
 import com.woodlands.yanp.common.network.ByteBufWowPacket
-import com.woodlands.yanp.common.srp.WowSrpService
+import com.woodlands.yanp.common.srp.WowSrp6Server
+
 import groovy.util.logging.Slf4j
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
+import org.bouncycastle.crypto.digests.SHA1Digest
+import org.bouncycastle.crypto.params.SRP6GroupParameters
 import org.springframework.stereotype.Service
+
+import java.security.SecureRandom
 
 @Slf4j
 @Service
 class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
 
+    /** The 'Safe Prime'' */
+    private static final BigInteger N = new BigInteger('894B645E89E1535BBDAD5B8B290650530801B18EBFBF5E8FAB3C82872A3E9BB7', 16)
+    /** The 'Generator' of the multiplicative group */
+    private static final BigInteger g = BigInteger.valueOf(7)
+    /** Just a holder for the Safe Prime and Generator */
+    static final SRP6GroupParameters srpParams = new SRP6GroupParameters(N, g)
+    /** Byte array that somehow represents a version challenge. Hard-coded this way in every *Mangos impl and AzerothCore */
+    public static final byte[] VERSION_CHALLENGE =
+            [ 0xBA, 0xA3, 0x1E, 0x99, 0xA0, 0x0B, 0x21, 0x57, 0xFC, 0x37, 0x3F, 0xB3, 0x69, 0xCD, 0xD2, 0xF1 ]
+
     final AccountService accountService
     final BanService banService
-    final WowSrpService srpService
+    final SecureRandom secureRandom
 
-    // TODO Try removing database access in this class to see if we can get rid of the error in realmlist?
-
-    LoginRequestChallengeMessageHandler(AccountService accountService, BanService banService, WowSrpService srpService) {
+    LoginRequestChallengeMessageHandler(AccountService accountService, BanService banService, SecureRandom secureRandom) {
         this.accountService = accountService
         this.banService = banService
-        this.srpService = srpService
+        this.secureRandom = secureRandom
     }
 
     @Override
@@ -117,13 +132,47 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
                 break
         }
 
-        byte[] challengePayload = srpService.generateChallenge(ch, account)
+        def verifier = new BigInteger(1, account.v.decodeHex())
+        def salt = account.s.decodeHex()
+        def I = account.username.getBytes()
+        def securityFlags = (byte)0x00
+
+        WowSrp6Server srp6Server = WowSrp6Server.init(srpParams, verifier, I, salt, new SHA1Digest(), secureRandom)
+        BigInteger B = srp6Server.generateServerCredentials()
+
+        ch.attr(AuthAttributeKey.SRP_ATTRIBUTE).set(srp6Server)
+
+        def writer = new PacketDataWriter()
+        writer.write(BitUtil.toLEByteArray(B, 32))
+        writer.writeByte(1) // Hard-coded in every server Impl I've seen
+        writer.write(g.toByteArray()) // This 'BigInteger' is only a single byte - 0x07
+        byte[] N_bytes = BitUtil.toLEByteArray(N, 32)
+        writer.writeByte(N_bytes.length) // Should always be 32 if we are enforcing min size, some cores hard-code it
+        writer.write(N_bytes)
+        writer.write(BitUtil.reverse(salt))
+        writer.write(VERSION_CHALLENGE)
+        writer.write(securityFlags) // security flags
+        if ((securityFlags & 0x1) == 0x1) {
+            writer.writeIntLE(0)
+            writer.writeLongLE(0)
+            writer.writeLongLE(0)
+        }
+        if ((securityFlags & 0x2) == 0x2) {
+            writer.writeByte(0)
+            writer.writeByte(0)
+            writer.writeByte(0)
+            writer.writeByte(0)
+            writer.writeLongLE(0)
+        }
+        if ((securityFlags & 0x4) == 0x4) {
+            writer.writeByte(1)
+        }
 
         ch.attr(AuthAttributeKey.ACCOUNT).set(account)
         ch.attr(AuthAttributeKey.STATUS).set(AuthStatus.LOGIN_PROOF)
 
         payload.write(AuthResult.WOW_SUCCESS.code)
-        payload.writeBytes(challengePayload)
+        payload.writeBytes(writer.bytes)
 
         log.debug('Challenge Request successful, sending challenge')
     }

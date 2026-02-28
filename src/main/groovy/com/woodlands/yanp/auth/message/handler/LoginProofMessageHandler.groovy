@@ -31,7 +31,6 @@ import com.woodlands.yanp.auth.service.AccountService
 import com.woodlands.yanp.common.BitUtil
 import com.woodlands.yanp.common.data.PacketDataWriter
 import com.woodlands.yanp.common.network.ByteBufWowPacket
-import com.woodlands.yanp.common.srp.WowSrpService
 import groovy.util.logging.Slf4j
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
@@ -43,11 +42,9 @@ import org.springframework.stereotype.Service
 class LoginProofMessageHandler implements AuthMessageHandler {
 
     final AccountService accountService
-    final WowSrpService srpService
 
-    LoginProofMessageHandler(AccountService accountService, WowSrpService srpService) {
+    LoginProofMessageHandler(AccountService accountService) {
         this.accountService = accountService
-        this.srpService = srpService
     }
 
     @Override
@@ -81,20 +78,22 @@ class LoginProofMessageHandler implements AuthMessageHandler {
             return
         }
 
-        def response = srpService.calculateSessionKey(srpServer, message)
         // TODO Handle security tokens etc here
         // TODO Verify client version - ACore and CMangos both do this here, why don't they do it earlier on Challenge message?
-        if (response == null) {
+
+        srpServer.calculateSecret(message.A)
+        BigInteger K = srpServer.calculateSessionKey()
+        if (!srpServer.verifyClientEvidenceMessage(message.M1)) {
             log.error("LoginProof failed")
             payload.write(AuthResult.WOW_FAIL_UNKNOWN_ACCOUNT.code)
             payload.write(0)
             payload.write(0)
             return
         }
+        BigInteger M2 = srpServer.calculateServerEvidenceMessage()
 
-        // TODO Set SessionKey into Account Table
         def account = channel.attr(AuthAttributeKey.ACCOUNT).get()
-        account.sessionKey = BigIntegers.asUnsignedByteArray(response.sessionKey).encodeHex().toString()
+        account.sessionKey = BigIntegers.asUnsignedByteArray(K).encodeHex().toString()
         accountService.save(account)
 
         // TODO Set os, locale, failed_logins, platform as well
@@ -103,10 +102,9 @@ class LoginProofMessageHandler implements AuthMessageHandler {
 
         channel.attr(AuthAttributeKey.STATUS).set(AuthStatus.AUTHED)
 
-        // TODO Validate M2 size not greater than 20?
         payload.write(AuthResult.WOW_SUCCESS.code)
         def writer = new PacketDataWriter()
-        writer.write(BitUtil.toByteArray(response.M2, 20))
+        writer.write(BitUtil.toByteArray(M2, 20))
         writer.writeIntLE(0x00800000) // All the cores use this. Acore labels it "Pro pass (arena tournament)"
         writer.writeIntLE(0) // Survey Id
         writer.writeShortLE(0) // Login Flags - Per ACore and CMangos: "0x01 has account message"

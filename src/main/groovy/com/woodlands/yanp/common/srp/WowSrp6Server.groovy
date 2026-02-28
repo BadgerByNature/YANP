@@ -41,7 +41,7 @@ class WowSrp6Server extends SRP6Server {
 
     // TODO Remove this once we have a fully working implementation
     /** For testing/troubleshooting purposes when we need a KNOWN "random" to reproduce expected results */
-    static BigInteger FAKE_B = null //new BigInteger("fc009cec3a0c60324f1ed1f37916fb4ad36571", 16)
+    static BigInteger TEST_B = null //new BigInteger("fc009cec3a0c60324f1ed1f37916fb4ad36571", 16)
 
     byte[] I // Account name as byte array
     byte[] salt // Salt
@@ -84,8 +84,8 @@ class WowSrp6Server extends SRP6Server {
     @Override
     final BigInteger generateServerCredentials() {
         BigInteger k = BigInteger.valueOf(3) // k = 3 for legacy SRP-6
-        if (FAKE_B) {
-            this.b = FAKE_B
+        if (TEST_B) {
+            this.b = TEST_B
         } else {
             this.b = selectPrivateValue()
         }
@@ -95,7 +95,8 @@ class WowSrp6Server extends SRP6Server {
 
     /**
      * Processes the client's credentials. If valid the shared secret is generated
-     * and returned.
+     * and returned. Overrides the superclass to that calculateU uses our hashPaddedPair
+     * rather than the superclass hashPaddedPair. Ours handles expected little-endian values.
      *
      * @param clientA The client's credentials
      * @return A shared secret BigInteger
@@ -111,7 +112,7 @@ class WowSrp6Server extends SRP6Server {
 
     /**
      * Authenticates the received client evidence message M1 and saves it only if
-     * correct. To be called after calculating the secret S.
+     * correct. To be called after calculating the secret S and the Key (SessionKey).
      *
      * @param clientM1 the client side generated evidence message
      * @return A boolean indicating if the client message M1 was the expected one.
@@ -120,11 +121,11 @@ class WowSrp6Server extends SRP6Server {
     @Override
     final boolean verifyClientEvidenceMessage(BigInteger clientM1) throws CryptoException {
         // Verify pre-requirements
-        if (this.A == null || this.B == null || this.S == null) {
-            throw new CryptoException("Impossible to compute and verify M1: some data are missing from the previous operations (A,B,S)")
+        if (this.A == null || this.B == null || this.Key == null) {
+            throw new CryptoException("Impossible to compute and verify M1: some data are missing from the previous operations (A,B,Key)")
         }
         // Compute the own client evidence message 'M1'
-        BigInteger computedM1 = WowSrp6Util.calculateM1(digest, N, g, I, salt, A, B, S)
+        BigInteger computedM1 = WowSrp6Util.calculateM1(digest, N, g, I, salt, A, B, Key)
         if (computedM1 == clientM1) {
             this.M1 = clientM1
             return true
@@ -142,11 +143,11 @@ class WowSrp6Server extends SRP6Server {
     @Override
     final BigInteger calculateServerEvidenceMessage() throws CryptoException {
         // Verify pre-requirements
-        if (this.A == null || this.M1 == null || this.S == null) {
-            throw new CryptoException("Impossible to compute M2: some data are missing from the previous operations (A,M1,S)")
+        if (this.A == null || this.M1 == null || this.Key == null) {
+            throw new CryptoException("Impossible to compute M2: some data are missing from the previous operations (A,M1,Key)")
         }
         // Compute the server evidence message 'M2'
-        this.M2 = WowSrp6Util.calculateM2(digest, N, A, M1, S)
+        this.M2 = WowSrp6Util.calculateM2(digest, N, A, M1, Key)
         return M2
     }
 
@@ -160,10 +161,10 @@ class WowSrp6Server extends SRP6Server {
     @Override
     final BigInteger calculateSessionKey() throws CryptoException {
         // Verify pre-requirements
-        if (this.S == null || this.M1 == null || this.M2 == null) {
-            throw new CryptoException("Impossible to compute Key: " + "some data are missing from the previous operations (S,M1,M2)")
+        if (this.S == null) {
+            throw new CryptoException("Impossible to compute Key: " + "some data are missing from the previous operations (S)")
         }
-        this.Key = WowSrp6Util.calculateKey(digest, N, S)
+        this.Key = WowSrp6Util.calculateKey(digest, S)
         return Key
     }
 }

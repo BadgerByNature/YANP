@@ -85,7 +85,7 @@ class WowSrp6Util extends SRP6Util {
      */
     static BigInteger calculateM1(Digest digest, BigInteger N, BigInteger g, byte[] I, byte[] salt, BigInteger A,
                                   BigInteger B, BigInteger S) {
-        BigInteger K = calculateKey(digest, N, S)
+        BigInteger K = calculateKey(digest, S)
         int padLength = (N.bitLength() + 7) / 8
         byte[] N_bytes = BitUtil.reverse(getPadded(N, padLength))
         digest.update(N_bytes, 0, N_bytes.length)
@@ -130,7 +130,7 @@ class WowSrp6Util extends SRP6Util {
      * @return M2 The calculated server evidence message
      */
     static BigInteger calculateM2(Digest digest, BigInteger N, BigInteger A, BigInteger M1, BigInteger S) {
-        BigInteger K = calculateKey(digest, N, S)
+        BigInteger K = calculateKey(digest, S)
         int padLength = (N.bitLength() + 7) / 8
         byte[] A_bytes = BitUtil.reverse(getPadded(A, padLength))
         byte[] M1_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(M1))
@@ -152,7 +152,7 @@ class WowSrp6Util extends SRP6Util {
      * @param S The secret calculated by both sides
      * @return
      */
-    static BigInteger calculateKey(Digest digest, BigInteger N, BigInteger S) { // TODO Why is N unused here? Why are the odd and even bites hashed separately?
+    static BigInteger calculateKey(Digest digest, BigInteger S) {
         // Take S and convert it into a little-endian byte array
         byte[] S_le = BitUtil.toLEByteArray(S, 32)
         byte[] S_even_bytes = new byte[16]

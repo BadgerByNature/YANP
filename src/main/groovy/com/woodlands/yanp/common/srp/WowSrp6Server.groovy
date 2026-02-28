@@ -163,7 +163,7 @@ class WowSrp6Server extends SRP6Server {
         if (this.S == null || this.M1 == null || this.M2 == null) {
             throw new CryptoException("Impossible to compute Key: " + "some data are missing from the previous operations (S,M1,M2)")
         }
-        this.Key = WowSrp6Util.calculateKey(digest, N, S)
+        this.Key = WowSrp6Util.calculateKey(digest, S)
         return Key
     }
 }

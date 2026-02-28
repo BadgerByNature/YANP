@@ -95,7 +95,8 @@ class WowSrp6Server extends SRP6Server {
 
     /**
      * Processes the client's credentials. If valid the shared secret is generated
-     * and returned.
+     * and returned. Overrides the superclass to that calculateU uses our hashPaddedPair
+     * rather than the superclass hashPaddedPair. Ours handles expected little-endian values.
      *
      * @param clientA The client's credentials
      * @return A shared secret BigInteger
@@ -111,7 +112,7 @@ class WowSrp6Server extends SRP6Server {
 
     /**
      * Authenticates the received client evidence message M1 and saves it only if
-     * correct. To be called after calculating the secret S.
+     * correct. To be called after calculating the secret S and the Key (SessionKey).
      *
      * @param clientM1 the client side generated evidence message
      * @return A boolean indicating if the client message M1 was the expected one.
@@ -142,11 +143,11 @@ class WowSrp6Server extends SRP6Server {
     @Override
     final BigInteger calculateServerEvidenceMessage() throws CryptoException {
         // Verify pre-requirements
-        if (this.A == null || this.M1 == null || this.S == null) {
-            throw new CryptoException("Impossible to compute M2: some data are missing from the previous operations (A,M1,S)")
+        if (this.A == null || this.M1 == null || this.Key == null) {
+            throw new CryptoException("Impossible to compute M2: some data are missing from the previous operations (A,M1,Key)")
         }
         // Compute the server evidence message 'M2'
-        this.M2 = WowSrp6Util.calculateM2(digest, N, A, M1, S)
+        this.M2 = WowSrp6Util.calculateM2(digest, N, A, M1, Key)
         return M2
     }
 

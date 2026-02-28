@@ -97,15 +97,14 @@ class WowSrp6Util extends SRP6Util {
      * @param N Modulus used to get the pad length
      * @param A The public client value
      * @param M1 The client evidence message
-     * @param S The secret calculated by both sides
+     * @param Key The session key
      * @return M2 The calculated server evidence message
      */
-    static BigInteger calculateM2(Digest digest, BigInteger N, BigInteger A, BigInteger M1, BigInteger S) {
-        BigInteger K = calculateKey(digest, S)
+    static BigInteger calculateM2(Digest digest, BigInteger N, BigInteger A, BigInteger M1, BigInteger Key) {
         int padLength = (N.bitLength() + 7) / 8
         byte[] A_bytes = BitUtil.reverse(getPadded(A, padLength))
         byte[] M1_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(M1))
-        byte[] K_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(K))
+        byte[] K_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(Key))
         digest.update(A_bytes, 0, A_bytes.length) // A
         digest.update(M1_bytes, 0, M1_bytes.length) // M1
         digest.update(K_bytes, 0, K_bytes.length) // K

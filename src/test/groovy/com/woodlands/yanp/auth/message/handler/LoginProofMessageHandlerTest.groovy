@@ -23,11 +23,10 @@ import com.woodlands.yanp.auth.db.entity.AccountEntity
 import com.woodlands.yanp.auth.message.LoginProofMessage
 import com.woodlands.yanp.auth.service.AccountService
 import com.woodlands.yanp.common.srp.WowSrp6Server
-import io.netty.util.Attribute
 import io.netty.channel.Channel
+import io.netty.util.Attribute
 import org.bouncycastle.crypto.digests.SHA1Digest
 import org.bouncycastle.crypto.params.SRP6GroupParameters
-import org.mockito.Mock
 import spock.lang.Specification
 
 import java.security.SecureRandom
@@ -42,9 +41,7 @@ class LoginProofMessageHandlerTest extends Specification {
 
     private static final BigInteger TEST_B = new BigInteger('98 00 60 81 b0 8e f2 5a 14 5a a4 05 2e 89 29 06 af e1 a7'.replace(' ', ''), 16)
 
-    @Mock
     AccountService mockAccountService = Mock(AccountService)
-    @Mock
     SecureRandom mockSecureRandom = Mock(SecureRandom)
 
     LoginProofMessageHandler systemUnderTest

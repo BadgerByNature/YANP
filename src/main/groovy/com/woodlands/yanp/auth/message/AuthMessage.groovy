@@ -17,5 +17,8 @@
 */
 package com.woodlands.yanp.auth.message
 
+import com.woodlands.yanp.auth.AuthCommand
+
 abstract class AuthMessage {
+    AuthCommand command
 }

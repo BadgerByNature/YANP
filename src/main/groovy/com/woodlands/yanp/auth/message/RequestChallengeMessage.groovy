@@ -24,7 +24,7 @@ package com.woodlands.yanp.auth.message
 import groovy.transform.ToString
 
 @ToString(includeNames = true)
-class LoginRequestChallengeMessage extends AuthMessage {
+class RequestChallengeMessage extends AuthMessage {
     byte error
     short size
     String gameName

@@ -1,7 +1,4 @@
 /*
- * Java World of Warcraft Emulation Project
- * Copyright (C) 2015-2020 JavaWoW
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14,11 +11,10 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Copyright (c) 2026 YANP: You Are Not Prepared
+ * See CONTRIBUTORS.md for further Copyright information
  */
-/*
-* Copyright (c) 2026 YANP: You Are Not Prepared
-* See CONTRIBUTORS.md for further Copyright information
-*/
 package com.woodlands.yanp.auth.message.handler
 
 import com.woodlands.yanp.auth.AuthAttributeKey
@@ -34,27 +30,17 @@ import com.woodlands.yanp.common.BitUtil
 import com.woodlands.yanp.common.data.PacketDataWriter
 import com.woodlands.yanp.common.network.ByteBufWowPacket
 import com.woodlands.yanp.common.srp.WowSrp6Server
-
 import groovy.util.logging.Slf4j
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
-import org.bouncycastle.crypto.digests.SHA1Digest
-import org.bouncycastle.crypto.params.SRP6GroupParameters
 import org.springframework.stereotype.Service
 
 import java.security.SecureRandom
 
 @Slf4j
 @Service
-class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
+class ReconnectRequestChallengeMessageHandler implements AuthMessageHandler {
 
-    /** The 'Safe Prime'' */
-    private static final BigInteger N = new BigInteger('894B645E89E1535BBDAD5B8B290650530801B18EBFBF5E8FAB3C82872A3E9BB7', 16)
-    /** The 'Generator' of the multiplicative group */
-    private static final BigInteger g = BigInteger.valueOf(7)
-    /** Just a holder for the Safe Prime and Generator */
-    static final SRP6GroupParameters srpParams = new SRP6GroupParameters(N, g)
-    /** Byte array that somehow represents a version challenge. Hard-coded this way in every *Mangos impl and AzerothCore */
     public static final byte[] VERSION_CHALLENGE =
             [ 0xBA, 0xA3, 0x1E, 0x99, 0xA0, 0x0B, 0x21, 0x57, 0xFC, 0x37, 0x3F, 0xB3, 0x69, 0xCD, 0xD2, 0xF1 ]
 
@@ -62,7 +48,7 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
     final BanService banService
     final SecureRandom secureRandom
 
-    LoginRequestChallengeMessageHandler(AccountService accountService, BanService banService, SecureRandom secureRandom) {
+    ReconnectRequestChallengeMessageHandler(AccountService accountService, BanService banService, SecureRandom secureRandom) {
         this.accountService = accountService
         this.banService = banService
         this.secureRandom = secureRandom
@@ -70,12 +56,12 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
 
     @Override
     boolean handles(AuthMessage message) {
-        return message instanceof RequestChallengeMessage && message.command == AuthCommand.CMD_AUTH_REQUEST_LOGIN_CHALLENGE
+        return message instanceof RequestChallengeMessage && message.command == AuthCommand.CMD_AUTH_RECONNECT_CHALLENGE
     }
 
     @Override
     void handle(AuthMessage message, Channel ch) {
-        log.debug('Handling LoginRequestMessage')
+        log.debug('Handling ReconnectRequestMessage')
         RequestChallengeMessage requestMessage = (RequestChallengeMessage)message
 
         ch.attr(AuthAttributeKey.BUILD).set(requestMessage.build)
@@ -87,14 +73,12 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
         // simplify our write logic here
         populateResponse(ch, requestMessage, payload)
         ch.writeAndFlush(new ByteBufWowPacket(
-                opCode: AuthCommand.CMD_AUTH_REQUEST_LOGIN_CHALLENGE.code,
+                opCode: AuthCommand.CMD_AUTH_RECONNECT_CHALLENGE.code,
                 payload: Unpooled.wrappedBuffer(payload.toByteArray()))
         )
     }
 
     void populateResponse(Channel ch, RequestChallengeMessage message, ByteArrayOutputStream payload) {
-
-        payload.write(0) // Unknown Use - just a spacer?
 
         String remoteIp = ch.remoteAddress().toString().replace('/', '').split(':')[0]
         if (banService.isIpBanned(remoteIp)) {
@@ -108,12 +92,6 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
             // Just log as debug, this could happen all the time by people mistyping account names
             log.debug("Account not found during login: $message.accountName")
             payload.write(AuthResult.WOW_FAIL_UNKNOWN_ACCOUNT.code)
-            return
-        }
-
-        if (account.s == null || account.v == null) {
-            log.error("Account has broken s/v values in database and cannot login: accountId=$account.id, accountName=$message.accountName")
-            payload.write(AuthResult.WOW_FAIL_FAIL_NO_ACCESS.code)
             return
         }
 
@@ -132,48 +110,26 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
                 break
         }
 
-        def verifier = new BigInteger(1, account.v.decodeHex())
-        def salt = account.s.decodeHex()
-        def I = account.username.getBytes()
-        def securityFlags = (byte)0x00
+        def sessionKey = new BigInteger(1, account.sessionKey.decodeHex())
+        def srpServer = new WowSrp6Server()
+        srpServer.setSessionKey(sessionKey)
 
-        WowSrp6Server srp6Server = WowSrp6Server.init(srpParams, verifier, I, salt, new SHA1Digest(), secureRandom)
-        BigInteger B = srp6Server.generateServerCredentials()
+        ch.attr(AuthAttributeKey.SRP_ATTRIBUTE).set(srpServer)
+        ch.attr(AuthAttributeKey.ACCOUNT).set(account)
+        ch.attr(AuthAttributeKey.STATUS).set(AuthStatus.RECON_PROOF)
 
-        ch.attr(AuthAttributeKey.SRP_ATTRIBUTE).set(srp6Server)
+        def randBytes = new byte[16]
+        secureRandom.nextBytes(randBytes)
+
+        // Our random reconnect proof salt
+        BigInteger reconnectProof = new BigInteger(randBytes)
+        ch.attr(AuthAttributeKey.RECON_PROOF).set(reconnectProof)
 
         def writer = new PacketDataWriter()
-        writer.write(BitUtil.toLEByteArray(B, 32))
-        writer.writeByte(1) // Hard-coded in every server Impl I've seen
-        writer.write(g.toByteArray()) // This 'BigInteger' is only a single byte - 0x07
-        byte[] N_bytes = BitUtil.toLEByteArray(N, 32)
-        writer.writeByte(N_bytes.length) // Should always be 32 if we are enforcing min size, some cores hard-code it
-        writer.write(N_bytes)
-        writer.write(BitUtil.reverse(salt))
+        writer.write(BitUtil.toLEByteArray(reconnectProof, 16))
         writer.write(VERSION_CHALLENGE)
-        writer.write(securityFlags) // security flags
-        if ((securityFlags & 0x1) == 0x1) {
-            writer.writeIntLE(0)
-            writer.writeLongLE(0)
-            writer.writeLongLE(0)
-        }
-        if ((securityFlags & 0x2) == 0x2) {
-            writer.writeByte(0)
-            writer.writeByte(0)
-            writer.writeByte(0)
-            writer.writeByte(0)
-            writer.writeLongLE(0)
-        }
-        if ((securityFlags & 0x4) == 0x4) {
-            writer.writeByte(1)
-        }
-
-        ch.attr(AuthAttributeKey.ACCOUNT).set(account)
-        ch.attr(AuthAttributeKey.STATUS).set(AuthStatus.LOGIN_PROOF)
 
         payload.write(AuthResult.WOW_SUCCESS.code)
         payload.writeBytes(writer.bytes)
-
-        log.debug('Challenge Request successful, sending challenge')
     }
 }

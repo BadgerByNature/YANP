@@ -1,7 +1,4 @@
 /*
- * Java World of Warcraft Emulation Project
- * Copyright (C) 2015-2020 JavaWoW
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14,11 +11,10 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Copyright (c) 2026 YANP: You Are Not Prepared
+ * See CONTRIBUTORS.md for further Copyright information
  */
-/*
-* Copyright (c) 2026 YANP: You Are Not Prepared
-* See CONTRIBUTORS.md for further Copyright information
-*/
 package com.woodlands.yanp.auth.decode
 
 import com.woodlands.yanp.auth.AuthCommand
@@ -29,22 +25,22 @@ import org.springframework.stereotype.Service
 
 @Slf4j
 @Service
-class LoginRequestChallengeDecoder extends RequestChallengeDecoder {
+class ReconnectRequestChallengeDecoder extends RequestChallengeDecoder {
 
     @Override
     boolean handles(AuthCommand command) {
-        return command == AuthCommand.CMD_AUTH_REQUEST_LOGIN_CHALLENGE
+        return command == AuthCommand.CMD_AUTH_RECONNECT_CHALLENGE
     }
 
     @Override
     DecodeResult<RequestChallengeMessage> decode(ByteBuf byteBuf) {
-        log.debug('Decoding login request challenge message')
+        log.debug('Decoding reconnect request message')
         def result = super.decode(byteBuf)
         if (result.status != DecodeStatus.COMPLETE) {
             return result
         }
 
-        result.message.command = AuthCommand.CMD_AUTH_REQUEST_LOGIN_CHALLENGE
+        result.message.command = AuthCommand.CMD_AUTH_RECONNECT_CHALLENGE
         result
     }
 }

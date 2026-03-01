@@ -110,9 +110,4 @@ class LoginProofMessageHandler implements AuthMessageHandler {
         writer.writeShortLE(0) // Login Flags - Per ACore and CMangos: "0x01 has account message"
         payload.writeBytes(writer.getBytes())
     }
-
-    static class LoginProofResponse {
-        BigInteger sessionKey
-        BigInteger M2
-    }
 }

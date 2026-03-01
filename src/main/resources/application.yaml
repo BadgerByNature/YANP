@@ -14,7 +14,7 @@ io:
 logging:
   level:
     com.woodlands.yanp: INFO
-    com.woodlands.yanp.auth.message.handler: DEBUG
+    com.woodlands.yanp.auth: DEBUG
     root: INFO
 server:
   port: 8081 # WebServer port

@@ -81,7 +81,7 @@ class AuthByteToMessageDecoderService extends ByteToMessageDecoder {
             case DecodeStatus.COMPLETE:
                 listOut.add(result.message)
                 break
-            case DecodeStatus.NOT_ENOUGH_BITES:
+            case DecodeStatus.NOT_ENOUGH_BYTES:
                 byteBuf.resetReaderIndex()
                 break
             case DecodeStatus.INVALID:

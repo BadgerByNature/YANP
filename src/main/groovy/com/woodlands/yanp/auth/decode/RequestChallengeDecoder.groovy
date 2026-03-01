@@ -61,7 +61,7 @@ abstract class RequestChallengeDecoder implements AuthCommandDecoder<RequestChal
     @Override
     DecodeResult<RequestChallengeMessage> decode(ByteBuf byteBuf) {
         if (byteBuf.readableBytes() < COMMAND_SIZE) {
-            return new DecodeResult<>(status: DecodeStatus.NOT_ENOUGH_BITES)
+            return new DecodeResult<>(status: DecodeStatus.NOT_ENOUGH_BYTES)
         }
 
         byte error = byteBuf.readByte() // TODO Handle ERROR = True here ?

@@ -40,7 +40,7 @@ class RealmListDecoder implements AuthCommandDecoder<RealmListMessage> {
 
         log.debug('Decoding login request message')
         if (byteBuf.readableBytes() < COMMAND_SIZE) {
-            return new DecodeResult<>(status: DecodeStatus.NOT_ENOUGH_BITES)
+            return new DecodeResult<>(status: DecodeStatus.NOT_ENOUGH_BYTES)
         }
         if (byteBuf.readableBytes() > COMMAND_SIZE) {
             return new DecodeResult<>(status: DecodeStatus.INVALID)

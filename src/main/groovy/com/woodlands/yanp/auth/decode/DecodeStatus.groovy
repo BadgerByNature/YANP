@@ -19,6 +19,6 @@ package com.woodlands.yanp.auth.decode
 
 enum DecodeStatus {
     COMPLETE,
-    NOT_ENOUGH_BITES,
+    NOT_ENOUGH_BYTES,
     INVALID
 }

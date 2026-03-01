@@ -59,7 +59,7 @@ class LoginProofDecoder implements AuthCommandDecoder<LoginProofMessage> {
         log.debug('Decoding login proof message')
 
         if (byteBuf.readableBytes() < COMMAND_SIZE) {
-            return new DecodeResult<LoginProofMessage>(status: DecodeStatus.NOT_ENOUGH_BITES)
+            return new DecodeResult<LoginProofMessage>(status: DecodeStatus.NOT_ENOUGH_BYTES)
         }
 
         def A_bytes = new byte[A_BYTES_LENGTH]

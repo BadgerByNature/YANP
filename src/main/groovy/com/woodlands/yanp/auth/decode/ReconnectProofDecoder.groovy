@@ -19,9 +19,7 @@ package com.woodlands.yanp.auth.decode
 
 import com.woodlands.yanp.auth.AuthCommand
 import com.woodlands.yanp.auth.AuthCommandDecoder
-import com.woodlands.yanp.auth.message.LoginProofMessage
 import com.woodlands.yanp.auth.message.ReconnectProofMessage
-import com.woodlands.yanp.common.BitUtil
 import groovy.util.logging.Slf4j
 import io.netty.buffer.ByteBuf
 import org.springframework.stereotype.Service
@@ -45,7 +43,7 @@ class ReconnectProofDecoder implements AuthCommandDecoder<ReconnectProofMessage>
         log.debug('Decoding reconnect proof message')
 
         if (byteBuf.readableBytes() < COMMAND_SIZE) {
-            return new DecodeResult<>(status: DecodeStatus.NOT_ENOUGH_BITES)
+            return new DecodeResult<>(status: DecodeStatus.NOT_ENOUGH_BYTES)
         }
 
         def R1_bytes = new byte[R1_BYTES_SIZE ]

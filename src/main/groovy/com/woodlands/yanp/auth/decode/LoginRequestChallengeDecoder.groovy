@@ -31,33 +31,6 @@ import org.springframework.stereotype.Service
 @Service
 class LoginRequestChallengeDecoder extends RequestChallengeDecoder {
 
-    /* We assume for the decoder that we've already read the first byte containing the command,
-       so this size is one less than the entire packet sent to us */
-    private static final int COMMAND_SIZE = 33
-    // TODO Actually the command passes in the size, we should check that we get the error and size bites, then make sure the size is correct
-    // This is because the length of the account name can vary, so we nee dynamic size-checking. Max name size is 16 bytes
-
-    /* Reference From vMangos/CMangos/AzerothCore
-    typedef struct AUTH_LOGON_CHALLENGE_C
-    {
-        uint8   cmd;
-        uint8   error;
-        uint16  size;
-        uint8   gamename[4];
-        uint8   version1;
-        uint8   version2;
-        uint8   version3;
-        uint16  build;
-        uint8   platform[4];
-        uint8   os[4];
-        uint8   country[4];
-        uint32  timezone_bias;
-        uint32  ip;
-        uint8   I_len;
-        uint8   I[1]; // AccountName
-    } sAuthLogonChallenge_C;
-     */
-
     @Override
     boolean handles(AuthCommand command) {
         return command == AuthCommand.CMD_AUTH_REQUEST_LOGIN_CHALLENGE
@@ -65,6 +38,7 @@ class LoginRequestChallengeDecoder extends RequestChallengeDecoder {
 
     @Override
     DecodeResult<RequestChallengeMessage> decode(ByteBuf byteBuf) {
+        log.debug('Decoding login request challenge message')
         def result = super.decode(byteBuf)
         if (result.status != DecodeStatus.COMPLETE) {
             return result

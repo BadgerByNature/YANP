@@ -17,5 +17,30 @@
  */
 package com.woodlands.yanp.auth.decode
 
-class ReconnectRequestChallengeDecoder {
+import com.woodlands.yanp.auth.AuthCommand
+import com.woodlands.yanp.auth.message.RequestChallengeMessage
+import groovy.util.logging.Slf4j
+import io.netty.buffer.ByteBuf
+import org.springframework.stereotype.Service
+
+@Slf4j
+@Service
+class ReconnectRequestChallengeDecoder extends RequestChallengeDecoder {
+
+    @Override
+    boolean handles(AuthCommand command) {
+        return command == AuthCommand.CMD_AUTH_RECONNECT_CHALLENGE
+    }
+
+    @Override
+    DecodeResult<RequestChallengeMessage> decode(ByteBuf byteBuf) {
+        log.debug('Decoding reconnect request message')
+        def result = super.decode(byteBuf)
+        if (result.status != DecodeStatus.COMPLETE) {
+            return result
+        }
+
+        result.message.command = AuthCommand.CMD_AUTH_RECONNECT_CHALLENGE
+        result
+    }
 }

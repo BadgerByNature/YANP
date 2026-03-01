@@ -80,6 +80,8 @@ class ReconnectRequestChallengeMessageHandler implements AuthMessageHandler {
 
     void populateResponse(Channel ch, RequestChallengeMessage message, ByteArrayOutputStream payload) {
 
+        ch.attr(AuthAttributeKey.STATUS).set(AuthStatus.CLOSED)
+
         String remoteIp = ch.remoteAddress().toString().replace('/', '').split(':')[0]
         if (banService.isIpBanned(remoteIp)) {
             log.debug("Remote IP attempted to connect but is BANNED") // TODO Log Remote Ip on release

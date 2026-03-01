@@ -94,6 +94,7 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
 
     void populateResponse(Channel ch, RequestChallengeMessage message, ByteArrayOutputStream payload) {
 
+        ch.attr(AuthAttributeKey.STATUS).set(AuthStatus.CLOSED)
         payload.write(0) // Unknown Use - just a spacer?
 
         String remoteIp = ch.remoteAddress().toString().replace('/', '').split(':')[0]

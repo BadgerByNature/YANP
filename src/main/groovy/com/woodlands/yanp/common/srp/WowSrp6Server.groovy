@@ -25,7 +25,9 @@ import com.woodlands.yanp.common.BitUtil
 import org.bouncycastle.crypto.CryptoException
 import org.bouncycastle.crypto.Digest
 import org.bouncycastle.crypto.agreement.srp.SRP6Server
+import org.bouncycastle.crypto.digests.SHA1Digest
 import org.bouncycastle.crypto.params.SRP6GroupParameters
+import org.bouncycastle.util.BigIntegers
 
 import java.security.SecureRandom
 
@@ -50,7 +52,7 @@ class WowSrp6Server extends SRP6Server {
      * Swap to a public constructor that takes the values instead of using .init
      * Try to figure out why so much is duplicated from the parent class
      */
-    private WowSrp6Server() {}
+    WowSrp6Server() {}
 
     static final WowSrp6Server init(SRP6GroupParameters params, BigInteger v, byte[] I, byte[] s, Digest digest,
                                     SecureRandom random) {
@@ -166,5 +168,29 @@ class WowSrp6Server extends SRP6Server {
         }
         this.Key = WowSrp6Util.calculateKey(digest, S)
         return Key
+    }
+
+    /**
+     * Computes a hashed reconnection proof.
+     * @param R1 The client's reconnect proof
+     * @param username The username on the account as a byte[]
+     * @param proofSalt The salt that we sent the client earlier from which they calculated their R1
+     * @return The hashed reconnection proof value which should match the client's R2
+     */
+    final byte[] calculateReconnectProof(byte[] R1, byte[] username, BigInteger proofSalt) {
+        digest = new SHA1Digest()
+        byte[] reconBytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(proofSalt))
+        byte[] K_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(Key))
+        digest.update(username, 0, username.length)
+        digest.update(R1, 0, R1.length)
+        digest.update(reconBytes, 0, reconBytes.length)
+        digest.update(K_bytes, 0 , K_bytes.length)
+        byte[] output = new byte[digest.getDigestSize()]
+        digest.doFinal(output, 0)
+        output
+    }
+
+    void setSessionKey(BigInteger key) {
+        this.Key = key
     }
 }

@@ -27,7 +27,9 @@ import com.woodlands.yanp.auth.AuthResult
 import com.woodlands.yanp.auth.constant.AuthStatus
 import com.woodlands.yanp.auth.message.AuthMessage
 import com.woodlands.yanp.auth.message.LoginProofMessage
+import com.woodlands.yanp.auth.model.BuildInfo
 import com.woodlands.yanp.auth.service.AccountService
+import com.woodlands.yanp.auth.service.VersionVerificationService
 import com.woodlands.yanp.common.BitUtil
 import com.woodlands.yanp.common.data.PacketDataWriter
 import com.woodlands.yanp.common.network.ByteBufWowPacket
@@ -42,9 +44,11 @@ import org.springframework.stereotype.Service
 class LoginProofMessageHandler implements AuthMessageHandler {
 
     final AccountService accountService
+    final VersionVerificationService versionVerificationService
 
-    LoginProofMessageHandler(AccountService accountService) {
+    LoginProofMessageHandler(AccountService accountService, VersionVerificationService versionVerificationService) {
         this.accountService = accountService
+        this.versionVerificationService = versionVerificationService
     }
 
     @Override
@@ -68,6 +72,7 @@ class LoginProofMessageHandler implements AuthMessageHandler {
 
     void populateResponse(Channel channel, LoginProofMessage message, ByteArrayOutputStream payload) {
         def srpServer = channel.attr(AuthAttributeKey.SRP_ATTRIBUTE).get()
+        channel.attr(AuthAttributeKey.STATUS).set(AuthStatus.CLOSED)
 
         // This should only happen if using a hacked client or direct socket connection to attempt to bypass security
         // If you went through the LoginChallenge already this will be here
@@ -78,8 +83,14 @@ class LoginProofMessageHandler implements AuthMessageHandler {
             return
         }
 
-        // TODO Handle security tokens etc here
-        // TODO Verify client version - ACore and CMangos both do this here, why don't they do it earlier on Challenge message?
+        Integer clientBuild = channel.attr(AuthAttributeKey.BUILD).get()
+        BuildInfo buildInfo = BuildInfo.BUILDS.get(clientBuild)
+        if (!buildInfo) {
+            // Client is found to be invalid via the build number passed in (8606 = Latest non-classic TBC client)
+            log.error('User tried to login with invalid client')
+            payload.write(AuthResult.WOW_FAIL_VERSION_INVALID.code)
+            return
+        }
 
         srpServer.calculateSecret(message.A)
         BigInteger K = srpServer.calculateSessionKey()
@@ -90,21 +101,30 @@ class LoginProofMessageHandler implements AuthMessageHandler {
             payload.write(0)
             return
         }
+
+        // TODO Handle security tokens etc here
+
+        String os = channel.attr(AuthAttributeKey.OS).get()
+        if (!versionVerificationService.verifyVersion(BitUtil.reverse(BigIntegers.asUnsignedByteArray(message.A)), message.crcHash, clientBuild, os, false)) {
+            // Client is found to be invalid via CRC Hash check validation despite claiming a valid build number
+            log.error('User tried to login with invalid client')
+            payload.write(AuthResult.WOW_FAIL_VERSION_INVALID.code)
+            return
+        }
+
+        // TODO Insert into account_logons table on success
+
         BigInteger M2 = srpServer.calculateServerEvidenceMessage()
 
         def account = channel.attr(AuthAttributeKey.ACCOUNT).get()
         account.sessionKey = BigIntegers.asUnsignedByteArray(K).encodeHex().toString()
-        accountService.save(account)
-
-        // TODO Set os, locale, failed_logins, platform as well
-
-        // TODO Verify version via CRC Hash
+        accountService.save(account) // Update the sessionKey into the account table - the game server uses it to verify the client connection
 
         channel.attr(AuthAttributeKey.STATUS).set(AuthStatus.AUTHED)
 
         payload.write(AuthResult.WOW_SUCCESS.code)
         def writer = new PacketDataWriter()
-        writer.write(BitUtil.toByteArray(M2, 20))
+        writer.write(BitUtil.toByteArray(M2, 20)) // Evidence message we return so the client knows we're a valid server
         writer.writeIntLE(0x00800000) // All the cores use this. Acore labels it "Pro pass (arena tournament)"
         writer.writeIntLE(0) // Survey Id
         writer.writeShortLE(0) // Login Flags - Per ACore and CMangos: "0x01 has account message"

@@ -23,6 +23,7 @@ import com.woodlands.yanp.auth.AuthResult
 import com.woodlands.yanp.auth.constant.AuthStatus
 import com.woodlands.yanp.auth.message.AuthMessage
 import com.woodlands.yanp.auth.message.ReconnectProofMessage
+import com.woodlands.yanp.auth.service.VersionVerificationService
 import com.woodlands.yanp.common.network.ByteBufWowPacket
 import groovy.util.logging.Slf4j
 import io.netty.buffer.Unpooled
@@ -32,6 +33,12 @@ import org.springframework.stereotype.Service
 @Slf4j
 @Service
 class ReconnectProofMessageHandler implements AuthMessageHandler {
+
+    final VersionVerificationService versionVerificationService
+
+    ReconnectProofMessageHandler(VersionVerificationService versionVerificationService) {
+        this.versionVerificationService = versionVerificationService
+    }
 
     @Override
     boolean handles(AuthMessage message) {
@@ -58,6 +65,8 @@ class ReconnectProofMessageHandler implements AuthMessageHandler {
         def reconProof = ch.attr(AuthAttributeKey.RECON_PROOF).get()
         def account = ch.attr(AuthAttributeKey.ACCOUNT).get()
 
+        ch.attr(AuthAttributeKey.STATUS).set(AuthStatus.CLOSED)
+
         if (!srpServer || !reconProof || !account) {
             payload.write(AuthResult.WOW_FAIL_VERSION_INVALID.code)
             return
@@ -69,9 +78,16 @@ class ReconnectProofMessageHandler implements AuthMessageHandler {
             return
         }
 
-        ch.attr(AuthAttributeKey.STATUS).set(AuthStatus.AUTHED)
+        Integer clientBuild = ch.attr(AuthAttributeKey.BUILD).get()
+        String os = ch.attr(AuthAttributeKey.OS).get()
+        if (!versionVerificationService.verifyVersion(message.R1, message.R3, clientBuild, os, true)) {
+            // Client is found to be invalid via CRC Hash check validation
+            log.error('User tried to reconnect with invalid client')
+            payload.write(AuthResult.WOW_FAIL_VERSION_INVALID.code)
+            return
+        }
 
-        // TODO Verify Version
+        ch.attr(AuthAttributeKey.STATUS).set(AuthStatus.AUTHED)
 
         payload.write(AuthResult.WOW_SUCCESS.code)
         payload.write(0)

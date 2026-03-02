@@ -48,7 +48,7 @@ import java.security.SecureRandom
 @Service
 class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
 
-    /** The 'Safe Prime'' */
+    /** The 'Safe Prime' */
     private static final BigInteger N = new BigInteger('894B645E89E1535BBDAD5B8B290650530801B18EBFBF5E8FAB3C82872A3E9BB7', 16)
     /** The 'Generator' of the multiplicative group */
     private static final BigInteger g = BigInteger.valueOf(7)

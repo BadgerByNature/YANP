@@ -27,8 +27,10 @@ class AuthAttributeKey {
     public static final AttributeKey<AccountEntity> ACCOUNT = AttributeKey.newInstance('Account')
     /** AttributeKey for injecting build information into the channel for later steps to use */
     public static final AttributeKey<Short> BUILD = AttributeKey.newInstance('Build')
+    /** AttributeKey for operating system the client passed in */
+    public static final AttributeKey<String> OS = AttributeKey.newInstance('OS')
     /** AttributeKey for the value used when sending and validating our reconnect challenge */
-    public static final AttributeKey<BigInteger> RECON_PROOF = AttributeKey.newInstance("Reconnect Proof")
+    public static final AttributeKey<BigInteger> RECON_PROOF = AttributeKey.newInstance('Reconnect Proof')
     /** AttributeKey for injecting and retrieving our WowSrp6Server into/from our Channel for use in future processing on the same channel */
     public static final AttributeKey<WowSrp6Server> SRP_ATTRIBUTE = AttributeKey.newInstance('SRP')
     /** AttributeKey for injecting current Auth Status into the channel */

@@ -25,9 +25,9 @@ import groovy.transform.ToString
 
 @ToString(includeNames = true)
 class LoginProofMessage extends AuthMessage {
-    BigInteger A
-    BigInteger M1
-    byte[] crcHash
+    BigInteger A // A client proof used for SRP secret calculation and version verification
+    BigInteger M1 // The client Evidence
+    byte[] crcHash // crcHash of 'A' against the server's hash for the client version
     byte numberOfKeys // Unused?
     byte securityFlags
 }

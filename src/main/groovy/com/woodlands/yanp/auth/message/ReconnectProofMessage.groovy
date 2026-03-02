@@ -19,8 +19,8 @@ package com.woodlands.yanp.auth.message
 
 class ReconnectProofMessage extends AuthMessage {
 
-    byte[] R1
-    byte[] R2
-    byte[] R3
+    byte[] R1 // A client proof for both srp validation and client hash validation
+    byte[] R2 // The expected hash value of the proof against the username, session key, and server random
+    byte[] R3 // The expected hash value of the proof against the server's hash for the client version
     byte numberOfKeys // Unused
 }

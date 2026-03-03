@@ -17,6 +17,7 @@
  */
 package com.woodlands.yanp.auth.db.entity
 
+import groovy.transform.EqualsAndHashCode
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
@@ -40,6 +41,7 @@ class RealmCharactersEntity {
     Integer count
 }
 
+@EqualsAndHashCode
 class RealmCharactersIdClass implements Serializable {
     Integer realmId
     Integer accountId

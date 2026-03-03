@@ -21,7 +21,6 @@
 */
 package com.woodlands.yanp.auth.decode
 
-import com.woodlands.yanp.auth.AuthCommand
 import com.woodlands.yanp.auth.AuthCommandDecoder
 import com.woodlands.yanp.auth.message.RequestChallengeMessage
 import com.woodlands.yanp.common.BitUtil
@@ -31,11 +30,8 @@ import io.netty.buffer.ByteBuf
 @Slf4j
 abstract class RequestChallengeDecoder implements AuthCommandDecoder<RequestChallengeMessage> {
 
-    /* We assume for the decoder that we've already read the first byte containing the command,
-       so this size is one less than the entire packet sent to us */
-    private static final int COMMAND_SIZE = 33
-    // TODO Actually the command passes in the size, we should check that we get the error and size bites, then make sure the size is correct
-    // This is because the length of the account name can vary, so we nee dynamic size-checking. Max name size is 16 bytes
+    /** The minimum size the 'body' of this message can be. Body starts at gamename */
+    private static final int MIN_MESSAGE_BODY_SIZE = 31
 
     /* Reference From vMangos/CMangos/AzerothCore
     typedef struct AUTH_LOGON_CHALLENGE_C
@@ -43,29 +39,38 @@ abstract class RequestChallengeDecoder implements AuthCommandDecoder<RequestChal
         uint8   cmd;
         uint8   error;
         uint16  size;
-        uint8   gamename[4];
-        uint8   version1;
-        uint8   version2;
-        uint8   version3;
-        uint16  build;
-        uint8   platform[4];
-        uint8   os[4];
-        uint8   country[4];
-        uint32  timezone_bias;
-        uint32  ip;
-        uint8   I_len;
-        uint8   I[1]; // AccountName
+        uint8   gamename[4];    4
+        uint8   version1;       1
+        uint8   version2;       1
+        uint8   version3;       1
+        uint16  build;          2
+        uint8   platform[4];    4
+        uint8   os[4];          4
+        uint8   country[4];     4
+        uint32  timezone_bias;  4
+        uint32  ip;             4
+        uint8   I_len;          1
+        uint8   I[1]; // AccountName min 1 byte (probably longer minimum than that, honestly)
     } sAuthLogonChallenge_C;
      */
 
     @Override
     DecodeResult<RequestChallengeMessage> decode(ByteBuf byteBuf) {
-        if (byteBuf.readableBytes() < COMMAND_SIZE) {
+        // We need 3 more bytes to get the values that describes the size of the whole message
+        if (byteBuf.readableBytes() < 3) {
+            return new DecodeResult<>(status: DecodeStatus.NOT_ENOUGH_BYTES)
+        }
+        byte error = byteBuf.readByte() // TODO Handle ERROR = True here ?
+        short size = byteBuf.readShortLE()
+        // If the specified size is too small to include the minimum body size, then error
+        if (size < MIN_MESSAGE_BODY_SIZE) {
+            return new DecodeResult<>(status: DecodeStatus.INVALID)
+        }
+        // If not enough readable bytes, send it back and wait for more
+        if (byteBuf.readableBytes() < size) {
             return new DecodeResult<>(status: DecodeStatus.NOT_ENOUGH_BYTES)
         }
 
-        byte error = byteBuf.readByte() // TODO Handle ERROR = True here ?
-        short size = byteBuf.readShortLE() // TODO Handle size not matching the rest of the body
         byte[] gameName = BitUtil.readLECString(byteBuf, 4)
         byte majorVersion = byteBuf.readByte()
         byte minorVersion = byteBuf.readByte()
@@ -79,8 +84,10 @@ abstract class RequestChallengeDecoder implements AuthCommandDecoder<RequestChal
         int timezone = byteBuf.readIntLE()
         int ip = byteBuf.readIntLE()
         byte iLength = byteBuf.readByte()
+
+        // If for some reason there's not enough bytes for the iLength then we were lied to somewhere and should abort
+        // This helps keep us from ever trying to read bytes that don't exist
         if (byteBuf.readableBytes() < iLength) {
-            log.error("Incorrect packet size when decoding I (account name): $AuthCommand.CMD_AUTH_REQUEST_LOGIN_CHALLENGE")
             return new DecodeResult<>(status: DecodeStatus.INVALID)
         }
         // Every other codebase calls this `I`, which is a value designated as part of SRP6 authentication

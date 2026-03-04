@@ -36,6 +36,7 @@ import io.netty.channel.EventLoopGroup
 import io.netty.channel.MultiThreadIoEventLoopGroup
 import io.netty.channel.nio.NioIoHandler
 import io.netty.channel.socket.nio.NioServerSocketChannel
+import io.netty.handler.timeout.IdleStateHandler
 import io.netty.util.NetUtil
 import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Value
@@ -49,6 +50,8 @@ import org.springframework.stereotype.Service
 @Slf4j
 @Service
 class AuthServer {
+
+    private static final int IDLE_DISCONNECT_SECONDS = 30
 
     private final AuthChannelInboundHandler authChannelInboundHandler
     private final AuthResponseEncoder authResponseEncoder
@@ -93,6 +96,8 @@ class AuthServer {
                         // An anonymous ChannelListener should be enough for our needs
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
+                            ch.pipeline().addFirst("defaultIdleStateHandler",
+                                    new IdleStateHandler(0, 0, IDLE_DISCONNECT_SECONDS))
                             // Decoder cannot be set to @Shared, but the ChannelInboundHandler and Encoder can be
                             ch.pipeline().addLast("decoder", new AuthByteToMessageDecoderService(authCommandDecoders))
                             ch.pipeline().addLast(authChannelInboundHandler)

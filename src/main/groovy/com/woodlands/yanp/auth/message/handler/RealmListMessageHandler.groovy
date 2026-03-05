@@ -70,7 +70,7 @@ class RealmListMessageHandler implements AuthMessageHandler {
             // Should investigate later, might be an important feature for development purposes
             def locked = realm.allowedSecurityLevel > account.gmLevel
             // Get the character count for this account at this specific realm
-            def characterCount = realmCharacters.find { it.realmId == realm.id }.with { it.count }
+            def characterCount = realmCharacters.find { it.realmId == realm.id }.with { it?.count ?: 0 }
 
             realmInfosWriter.writeByte(realm.icon)
             realmInfosWriter.writeByte(locked)

@@ -84,9 +84,13 @@ class RealmListMessageHandler implements AuthMessageHandler {
             if (realm.realmFlags & 0x04) {
                 BuildInfo buildInfo
                 Integer clientBuild = ch.attr(AuthAttributeKey.BUILD).get()
-                // TODO This is wrong - should check to see if the client's build is in the realm's build list. If so, display that build info
-                // TODO If not, display the realm's build info from the first build listed
-                if (clientBuild != null && (buildInfo = BuildInfo.BUILDS.get(clientBuild))) {
+                def realmBuilds = realm.realmBuilds.split(' ') // Realm builds are space-separated
+                if (realmBuilds?.contains(clientBuild.toString().trim())) {
+                    buildInfo = BuildInfo.BUILDS.get(clientBuild)
+                } else {
+                    buildInfo = BuildInfo.BUILDS.get(Integer.valueOf(realmBuilds[0].trim()))
+                }
+                if (buildInfo) {
                     realmInfosWriter.writeByte(buildInfo.majorVersion) // Realm major version
                     realmInfosWriter.writeByte(buildInfo.minorVersion) // Realm minor version
                     realmInfosWriter.writeByte(buildInfo.bugfixVersion) // Patch version

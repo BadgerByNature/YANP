@@ -25,6 +25,7 @@ import com.woodlands.yanp.auth.AuthAttributeKey
 import com.woodlands.yanp.auth.AuthCommand
 import com.woodlands.yanp.auth.AuthResult
 import com.woodlands.yanp.auth.constant.AuthStatus
+import com.woodlands.yanp.auth.constant.SecurityFlag
 import com.woodlands.yanp.auth.message.AuthMessage
 import com.woodlands.yanp.auth.message.LoginProofMessage
 import com.woodlands.yanp.auth.model.BuildInfo
@@ -102,7 +103,12 @@ class LoginProofMessageHandler implements AuthMessageHandler {
             return
         }
 
-        // TODO Handle security tokens etc here
+        def account = channel.attr(AuthAttributeKey.ACCOUNT).get()
+        if (message.securityFlags & SecurityFlag.AUTHENTICATOR.flag) {
+            def pins = message.pins
+            def accountToken = account.token
+            // TODO Call validation here
+        }
 
         String os = channel.attr(AuthAttributeKey.OS).get()
         if (!versionVerificationService.verifyVersion(BitUtil.reverse(BigIntegers.asUnsignedByteArray(message.A)), message.crcHash, clientBuild, os, false)) {
@@ -116,7 +122,6 @@ class LoginProofMessageHandler implements AuthMessageHandler {
 
         BigInteger M2 = srpServer.calculateServerEvidenceMessage()
 
-        def account = channel.attr(AuthAttributeKey.ACCOUNT).get()
         account.sessionKey = BigIntegers.asUnsignedByteArray(K).encodeHex().toString()
         accountService.save(account) // Update the sessionKey into the account table - the game server uses it to verify the client connection
 

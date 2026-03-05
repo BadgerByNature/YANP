@@ -161,8 +161,6 @@ class BitUtil {
         return ret
     }
 
-    //  TODO Get BigInteger from HexString - Check expected length
-
     /**
      * Converts a {@link BigInteger} into a big-endian byte array of {@code minSize}
      * or greater, dropping the extra sign byte if the number is positive.

@@ -82,18 +82,19 @@ class AuthChannelInboundHandler extends ChannelInboundHandlerAdapter {
     @Override
     void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         // Close the connection when an exception is raised.
+        log.warn("Channel connection to ${ctx.channel().remoteAddress()} threw an exception - closing")
         cause.printStackTrace()
         ctx.close()
     }
 
     @Override
     void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        if (evt instanceof IdleStateEvent) {
-            def idleEvent = (IdleStateEvent)evt
-            if (idleEvent.state() == IdleState.ALL_IDLE) {
-                log.info("Channel connection to ${ctx.channel().remoteAddress()} has been detected as idle - closing")
-                ctx.close()
-            }
+        // Close the connection when it is detected as being idle
+        if (evt instanceof IdleStateEvent && ((IdleStateEvent)evt).state() == IdleState.ALL_IDLE) {
+            log.info("Channel connection to ${ctx.channel().remoteAddress()} has been detected as idle - closing")
+            ctx.close()
+        } else {
+            ctx.fireUserEventTriggered(evt)
         }
     }
 }

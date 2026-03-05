@@ -60,7 +60,12 @@ abstract class RequestChallengeDecoder implements AuthCommandDecoder<RequestChal
         if (byteBuf.readableBytes() < 3) {
             return new DecodeResult<>(status: DecodeStatus.NOT_ENOUGH_BYTES)
         }
-        byte error = byteBuf.readByte() // TODO Handle ERROR = True here ?
+
+        byte error = byteBuf.readByte()
+        if (error != (byte)0) {
+            return new DecodeResult<>(status: DecodeStatus.CLIENT_ERROR)
+        }
+
         short size = byteBuf.readShortLE()
         // If the specified size is too small to include the minimum body size, then error
         if (size < MIN_MESSAGE_BODY_SIZE) {

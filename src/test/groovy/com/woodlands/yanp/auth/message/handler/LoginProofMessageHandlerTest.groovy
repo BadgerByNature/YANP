@@ -21,7 +21,9 @@ import com.woodlands.yanp.auth.AuthAttributeKey
 import com.woodlands.yanp.auth.constant.AuthStatus
 import com.woodlands.yanp.auth.db.entity.AccountEntity
 import com.woodlands.yanp.auth.message.LoginProofMessage
+import com.woodlands.yanp.auth.model.BuildInfo
 import com.woodlands.yanp.auth.service.AccountService
+import com.woodlands.yanp.auth.service.VersionVerificationService
 import com.woodlands.yanp.common.srp.WowSrp6Server
 import io.netty.channel.Channel
 import io.netty.util.Attribute
@@ -43,11 +45,12 @@ class LoginProofMessageHandlerTest extends Specification {
 
     AccountService mockAccountService = Mock(AccountService)
     SecureRandom mockSecureRandom = Mock(SecureRandom)
+    VersionVerificationService mockVersionVerificationService = Mock(VersionVerificationService)
 
     LoginProofMessageHandler systemUnderTest
 
     void setup() {
-        systemUnderTest = new LoginProofMessageHandler(mockAccountService)
+        systemUnderTest = new LoginProofMessageHandler(mockAccountService, mockVersionVerificationService)
     }
 
     def "Proof calculation matches CMangos implementation"() {
@@ -57,6 +60,13 @@ class LoginProofMessageHandlerTest extends Specification {
         def mockChannel = Mock(Channel)
         def srpServerAttribute = Mock(Attribute<WowSrp6Server>)
         mockChannel.attr(AuthAttributeKey.SRP_ATTRIBUTE) >> srpServerAttribute
+        def buildAttribute = Mock(Attribute<Integer>)
+        mockChannel.attr(AuthAttributeKey.BUILD) >> buildAttribute
+        buildAttribute.get() >> BuildInfo.TBC.buildNum
+        def osAttribute = Mock(Attribute<String>)
+        mockChannel.attr(AuthAttributeKey.OS) >> osAttribute
+        osAttribute.get() >> 'mock'
+        mockVersionVerificationService.verifyVersion(*_) >> true
 
         def account = new AccountEntity(
                 s: 'F34034494262040664D1FA8F870051CE6BC8A6CD83EFAC353200053A4DDED8D5',

@@ -56,7 +56,7 @@ class BitUtil {
         byte[] dst = new byte[length]
         buf.readBytes(dst)
         reverseBuffer(dst, length - 1)
-        if (dst[length - 1] != 0) {
+        if (dst[length - 1] != (byte)0) {
             buf.resetReaderIndex()
             throw new IllegalStateException("last byte read is not null byte, it is: " + dst[length - 1])
         }

@@ -19,6 +19,7 @@
 * Copyright (c) 2026 YANP: You Are Not Prepared
 * See CONTRIBUTORS.md for further Copyright information
 */
+//file:noinspection ChangeToOperator
 package com.woodlands.yanp.common.srp
 
 import com.woodlands.yanp.common.BitUtil

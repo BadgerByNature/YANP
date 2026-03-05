@@ -85,7 +85,7 @@ class RealmListMessageHandler implements AuthMessageHandler {
                 BuildInfo buildInfo
                 Integer clientBuild = ch.attr(AuthAttributeKey.BUILD).get()
                 def realmBuilds = realm.realmBuilds.split(' ') // Realm builds are space-separated
-                if (realmBuilds?.contains(clientBuild.toString().trim())) {
+                if (clientBuild.toString().trim() in realmBuilds) {
                     buildInfo = BuildInfo.BUILDS.get(clientBuild)
                 } else {
                     buildInfo = BuildInfo.BUILDS.get(Integer.valueOf(realmBuilds[0].trim()))

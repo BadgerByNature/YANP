@@ -51,7 +51,7 @@ class AuthByteToMessageDecoderService extends ByteToMessageDecoder {
     }
 
     @Override
-    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> listOut) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> listOut) throws Exception {
         // One byte should be all we need to determine the AuthCommand, but no command is shorter than 3 bytes
         if (byteBuf.readableBytes() < 3) {
             return
@@ -64,15 +64,17 @@ class AuthByteToMessageDecoderService extends ByteToMessageDecoder {
         byte commandCode = byteBuf.readByte()
 
         AuthCommand command = AuthCommand.fromCode(commandCode)
-        AuthStatus currentAuthStatus = channelHandlerContext.channel().attr(AuthAttributeKey.STATUS).get()
+        AuthStatus currentAuthStatus = ctx.channel().attr(AuthAttributeKey.STATUS).get()
         if (currentAuthStatus != command.expectedAuthStatus) {
-            log.warn("Unexpected auth status found")
+            log.warn('Client sent a command that did not match the current auth status')
+            ctx.close()
             return
         }
 
         def decoder = authCommandDecoders.find { it -> it.handles(command) }
         if (decoder == null) {
-            log.warn("No decoder found for packet with command code ${Integer.toHexString(commandCode)}")
+            log.warn("No decoder found for command code ${Integer.toHexString(commandCode)}")
+            ctx.close()
             return
         }
 
@@ -85,8 +87,13 @@ class AuthByteToMessageDecoderService extends ByteToMessageDecoder {
                 byteBuf.resetReaderIndex()
                 break
             case DecodeStatus.INVALID:
-                log.error("Decoding packet from ${channelHandlerContext.channel().remoteAddress()} resulted in status $DecodeStatus.INVALID")
-                throw new Exception('Invalid data')
+                log.warn("Decoding packet from ${ctx.channel().remoteAddress()} resulted in status $DecodeStatus.INVALID")
+                ctx.close()
+                break
+            default:
+                log.error('Reached default case on DecodeStatus')
+                ctx.close()
+                break
         }
     }
 }

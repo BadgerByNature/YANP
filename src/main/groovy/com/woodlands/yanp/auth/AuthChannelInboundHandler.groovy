@@ -28,6 +28,8 @@ import groovy.util.logging.Slf4j
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
+import io.netty.handler.timeout.IdleState
+import io.netty.handler.timeout.IdleStateEvent
 import org.springframework.stereotype.Service
 
 /**
@@ -47,12 +49,12 @@ class AuthChannelInboundHandler extends ChannelInboundHandlerAdapter {
     @Override
     void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         super.channelRegistered(ctx)
-        log.debug('Auth Inbound Channel Registered')
+        log.debug("Channel registered: ${ctx.channel().remoteAddress()}")
     }
 
     @Override
     final void channelActive(ChannelHandlerContext ctx) throws Exception {
-        log.debug("IoSession opened with ${ctx.channel().remoteAddress()}")
+        log.debug("Channel active: ${ctx.channel().remoteAddress()}")
         // Automatically set as 'Challenge' when first connecting - could be LogonChallenge or ReconnectChallenge
         ctx.channel().attr(AuthAttributeKey.STATUS).set(AuthStatus.CHALLENGE)
     }
@@ -68,9 +70,31 @@ class AuthChannelInboundHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
+    void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        log.debug("Channel inactive: ${ctx.channel().remoteAddress()}")
+    }
+
+    @Override
+    void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        log.debug("Channel unregistered: ${ctx.channel().remoteAddress()}")
+    }
+
+    @Override
     void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         // Close the connection when an exception is raised.
+        log.warn("Channel connection to ${ctx.channel().remoteAddress()} threw an exception - closing")
         cause.printStackTrace()
         ctx.close()
+    }
+
+    @Override
+    void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        // Close the connection when it is detected as being idle
+        if (evt instanceof IdleStateEvent && ((IdleStateEvent)evt).state() == IdleState.ALL_IDLE) {
+            log.info("Channel connection to ${ctx.channel().remoteAddress()} has been detected as idle - closing")
+            ctx.close()
+        } else {
+            ctx.fireUserEventTriggered(evt)
+        }
     }
 }

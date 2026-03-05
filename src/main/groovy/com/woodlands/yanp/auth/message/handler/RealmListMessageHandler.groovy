@@ -53,7 +53,7 @@ class RealmListMessageHandler implements AuthMessageHandler {
 
         def account = ch.attr(AuthAttributeKey.ACCOUNT).get()
         if (!account) {
-            throw new Exception("Account not found on Realm List message")
+            throw new Exception('Account not found on Realm List message')
         }
 
         // Get the character counts for all realms up front instead of opening a query for each realm individually
@@ -143,25 +143,3 @@ class RealmListMessageHandler implements AuthMessageHandler {
          realmList.count { gmLevel >= it.allowedSecurityLevel }
     }
 }
-
-// TODO Seeing error when this handler loads:
-// Obtaining singleton bean 'transactionManager' in thread "multiThreadIoEventLoopGroup-3-1" while other thread holds singleton lock for other beans [authServer]
-// Not sure why it's running into a lock, or why it's trying to 'refresh' the authServer bean.
-// The handler is still working, but I'd like to resolve the pseudo-error (it's only logged as an INFO but maybe there's a performance bottleneck?)
-//
-// Googling suggested maybe it's due to blocking on the IO thread, but the error is happening before I even log the 'Handling RealmListMessage'
-// May try the following to see what it does
-//
-// Submit the blocking operation to the custom executor
-//        executor.submit(() -> {
-//            try {
-//                // Perform time-consuming work here (e.g., DB access)
-//                Object result = performBlockingOperation(msg);
-//                // Write the result back to the Netty pipeline on the event loop
-//                ctx.channel().eventLoop().submit(() -> {
-//                    ctx.writeAndFlush(result);
-//                });
-//            } catch (Exception e) {
-//                ctx.fireExceptionCaught(e);
-//            }
-//        });

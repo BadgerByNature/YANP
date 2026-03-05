@@ -23,6 +23,7 @@ package com.woodlands.yanp.auth.decode
 
 import com.woodlands.yanp.auth.AuthCommand
 import com.woodlands.yanp.auth.AuthCommandDecoder
+import com.woodlands.yanp.auth.constant.SecurityFlag
 import com.woodlands.yanp.auth.message.LoginProofMessage
 import com.woodlands.yanp.common.BitUtil
 import groovy.util.logging.Slf4j
@@ -71,12 +72,23 @@ class LoginProofDecoder implements AuthCommandDecoder<LoginProofMessage> {
         byte numberOfKeys = byteBuf.readByte()
         byte securityFlags = byteBuf.readByte()
 
+        byte[] pins = [] as byte
+        if (securityFlags & SecurityFlag.AUTHENTICATOR.flag) {
+            if (byteBuf.readableBytes() < 1) return new DecodeResult<LoginProofMessage>(status: DecodeStatus.NOT_ENOUGH_BYTES)
+            byte pinCount = byteBuf.readByte()
+            if (pinCount > 16) return new DecodeResult<LoginProofMessage>(status: DecodeStatus.INVALID)
+            if (byteBuf.readableBytes() < pinCount) return new DecodeResult<LoginProofMessage>(status: DecodeStatus.NOT_ENOUGH_BYTES)
+            pins = new byte[pinCount]
+            byteBuf.readBytes(pins, 0, pinCount)
+        }
+
         def message = new LoginProofMessage(
                 A: BitUtil.toBigInteger(A_bytes, true),
                 M1: BitUtil.toBigInteger(M1_bytes, true),
                 crcHash: crcHash,
                 numberOfKeys: numberOfKeys,
-                securityFlags: securityFlags
+                securityFlags: securityFlags,
+                pins: pins
         )
         new DecodeResult<LoginProofMessage>(
                 message: message,

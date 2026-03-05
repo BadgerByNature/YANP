@@ -26,6 +26,7 @@ import com.woodlands.yanp.auth.AuthCommand
 import com.woodlands.yanp.auth.AuthResult
 import com.woodlands.yanp.auth.constant.AuthStatus
 import com.woodlands.yanp.auth.constant.BanStatus
+import com.woodlands.yanp.auth.constant.SecurityFlag
 import com.woodlands.yanp.auth.message.AuthMessage
 import com.woodlands.yanp.auth.message.RequestChallengeMessage
 import com.woodlands.yanp.auth.service.AccountService
@@ -137,7 +138,8 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
         def verifier = new BigInteger(1, account.v.decodeHex())
         def salt = account.s.decodeHex()
         def I = account.username.getBytes()
-        def securityFlags = (byte)0x00
+        // In TBC this is an authenticator. If we add Vanilla support this could have other options
+        def securityFlags = account.token.isBlank() ? SecurityFlag.NONE.flag : SecurityFlag.AUTHENTICATOR.flag
 
         WowSrp6Server srp6Server = WowSrp6Server.init(srpParams, verifier, I, salt, new SHA1Digest(), secureRandom)
         BigInteger B = srp6Server.generateServerCredentials()
@@ -153,7 +155,7 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
         writer.write(N_bytes)
         writer.write(BitUtil.reverse(salt))
         writer.write(VERSION_CHALLENGE)
-        writer.write(securityFlags) // security flags
+        writer.writeByte(securityFlags) // security flags
         if ((securityFlags & 0x1) == 0x1) {
             writer.writeIntLE(0)
             writer.writeLongLE(0)

@@ -90,10 +90,6 @@ class AuthByteToMessageDecoderService extends ByteToMessageDecoder {
                 log.warn("Decoding packet from ${ctx.channel().remoteAddress()} resulted in status $DecodeStatus.INVALID")
                 ctx.close()
                 break
-            case DecodeStatus.CLIENT_ERROR:
-                log.warn('Client sent non-zero error byte')
-                ctx.close()
-                break
             default:
                 log.error('Reached default case on DecodeStatus')
                 ctx.close()

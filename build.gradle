@@ -1,3 +1,4 @@
+//file:noinspection GrUnresolvedAccess
 plugins {
 	id 'groovy'
 	id 'org.springframework.boot' version '4.0.2'
@@ -40,4 +41,7 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	testLogging {
+		events "failed"
+	}
 }

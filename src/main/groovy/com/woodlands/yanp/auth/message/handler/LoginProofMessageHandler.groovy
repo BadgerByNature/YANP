@@ -109,7 +109,7 @@ class LoginProofMessageHandler implements AuthMessageHandler {
         def account = channel.attr(AuthAttributeKey.ACCOUNT).get()
         if (message.securityFlags & SecurityFlag.AUTHENTICATOR.flag) {
             def pins = message.pins
-            def accountToken = account.token
+            def accountToken = account.token // This value really ought to be encrypted in the database, but it's not in CMangos
             authenticatorService.validateToken(accountToken, pins)
         }
 

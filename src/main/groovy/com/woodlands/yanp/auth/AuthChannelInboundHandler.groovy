@@ -86,15 +86,4 @@ class AuthChannelInboundHandler extends ChannelInboundHandlerAdapter {
         cause.printStackTrace()
         ctx.close()
     }
-
-    @Override
-    void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        // Close the connection when it is detected as being idle
-        if (evt instanceof IdleStateEvent && ((IdleStateEvent)evt).state() == IdleState.ALL_IDLE) {
-            log.info("Channel connection to ${ctx.channel().remoteAddress()} has been detected as idle - closing")
-            ctx.close()
-        } else {
-            ctx.fireUserEventTriggered(evt)
-        }
-    }
 }

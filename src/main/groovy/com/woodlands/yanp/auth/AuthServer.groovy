@@ -101,6 +101,7 @@ class AuthServer {
                             // Decoder cannot be set to @Shared, but the ChannelInboundHandler and Encoder can be
                             ch.pipeline().addLast("decoder", new AuthByteToMessageDecoderService(authCommandDecoders))
                             ch.pipeline().addLast(authChannelInboundHandler)
+                            ch.pipeline().addLast(new AuthChannelIdleHandler())
                             ch.pipeline().addLast("encoder", authResponseEncoder)
                         }
                     })

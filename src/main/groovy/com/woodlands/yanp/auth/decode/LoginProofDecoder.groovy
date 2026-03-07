@@ -72,7 +72,7 @@ class LoginProofDecoder implements AuthCommandDecoder<LoginProofMessage> {
         byte numberOfKeys = byteBuf.readByte()
         byte securityFlags = byteBuf.readByte()
 
-        byte[] pins = [] as byte
+        byte[] pins = new byte[0]
         if (securityFlags & SecurityFlag.AUTHENTICATOR.flag) {
             if (byteBuf.readableBytes() < 1) return new DecodeResult<LoginProofMessage>(status: DecodeStatus.NOT_ENOUGH_BYTES)
             byte pinCount = byteBuf.readByte()

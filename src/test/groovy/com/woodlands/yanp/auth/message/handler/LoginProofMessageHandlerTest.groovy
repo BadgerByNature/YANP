@@ -24,6 +24,7 @@ import com.woodlands.yanp.auth.db.entity.AccountEntity
 import com.woodlands.yanp.auth.message.LoginProofMessage
 import com.woodlands.yanp.auth.model.BuildInfo
 import com.woodlands.yanp.auth.service.AccountService
+import com.woodlands.yanp.auth.service.AuthenticatorService
 import com.woodlands.yanp.auth.service.VersionVerificationService
 import com.woodlands.yanp.common.srp.WowSrp6Server
 import io.netty.channel.Channel
@@ -45,13 +46,14 @@ class LoginProofMessageHandlerTest extends Specification {
     private static final BigInteger TEST_B = new BigInteger('98 00 60 81 b0 8e f2 5a 14 5a a4 05 2e 89 29 06 af e1 a7'.replace(' ', ''), 16)
 
     AccountService mockAccountService = Mock(AccountService)
+    AuthenticatorService mockAuthenticatorService = Mock(AuthenticatorService)
     SecureRandom mockSecureRandom = Mock(SecureRandom)
     VersionVerificationService mockVersionVerificationService = Mock(VersionVerificationService)
 
     LoginProofMessageHandler systemUnderTest
 
     void setup() {
-        systemUnderTest = new LoginProofMessageHandler(mockAccountService, mockVersionVerificationService)
+        systemUnderTest = new LoginProofMessageHandler(mockAccountService, mockAuthenticatorService, mockVersionVerificationService)
     }
 
     def "Proof calculation matches CMangos implementation"() {

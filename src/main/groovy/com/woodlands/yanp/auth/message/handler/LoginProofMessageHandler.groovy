@@ -30,6 +30,7 @@ import com.woodlands.yanp.auth.message.AuthMessage
 import com.woodlands.yanp.auth.message.LoginProofMessage
 import com.woodlands.yanp.auth.model.BuildInfo
 import com.woodlands.yanp.auth.service.AccountService
+import com.woodlands.yanp.auth.service.AuthenticatorService
 import com.woodlands.yanp.auth.service.VersionVerificationService
 import com.woodlands.yanp.common.BitUtil
 import com.woodlands.yanp.common.data.PacketDataWriter
@@ -45,10 +46,12 @@ import org.springframework.stereotype.Service
 class LoginProofMessageHandler implements AuthMessageHandler {
 
     final AccountService accountService
+    final AuthenticatorService authenticatorService
     final VersionVerificationService versionVerificationService
 
-    LoginProofMessageHandler(AccountService accountService, VersionVerificationService versionVerificationService) {
+    LoginProofMessageHandler(AccountService accountService, AuthenticatorService authenticatorService, VersionVerificationService versionVerificationService) {
         this.accountService = accountService
+        this.authenticatorService = authenticatorService
         this.versionVerificationService = versionVerificationService
     }
 
@@ -107,7 +110,7 @@ class LoginProofMessageHandler implements AuthMessageHandler {
         if (message.securityFlags & SecurityFlag.AUTHENTICATOR.flag) {
             def pins = message.pins
             def accountToken = account.token
-            // TODO Call validation here
+            authenticatorService.validateToken(accountToken, pins)
         }
 
         String os = channel.attr(AuthAttributeKey.OS).get()

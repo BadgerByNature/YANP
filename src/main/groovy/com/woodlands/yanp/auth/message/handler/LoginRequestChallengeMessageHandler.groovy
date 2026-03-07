@@ -42,6 +42,7 @@ import io.netty.channel.Channel
 import org.bouncycastle.crypto.digests.SHA1Digest
 import org.bouncycastle.crypto.params.SRP6GroupParameters
 import org.springframework.stereotype.Service
+import org.springframework.util.StringUtils
 
 import java.security.SecureRandom
 
@@ -139,7 +140,7 @@ class LoginRequestChallengeMessageHandler implements AuthMessageHandler {
         def salt = account.s.decodeHex()
         def I = account.username.getBytes()
         // In TBC this is an authenticator. If we add Vanilla support this could have other options
-        def securityFlags = account.token.isBlank() ? SecurityFlag.NONE.flag : SecurityFlag.AUTHENTICATOR.flag
+        def securityFlags = account.token ? SecurityFlag.AUTHENTICATOR.flag : SecurityFlag.NONE.flag
 
         WowSrp6Server srp6Server = WowSrp6Server.init(srpParams, verifier, I, salt, new SHA1Digest(), secureRandom)
         BigInteger B = srp6Server.generateServerCredentials()

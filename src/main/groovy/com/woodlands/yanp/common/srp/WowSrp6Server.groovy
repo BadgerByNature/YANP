@@ -49,10 +49,6 @@ class WowSrp6Server extends SRP6Server {
     byte[] I // Account name as byte array
     byte[] salt // Salt
 
-    /* TODO Once this is proven working, figure out which overrides we do and do not need.
-     * Swap to a public constructor that takes the values instead of using .init
-     * Try to figure out why so much is duplicated from the parent class
-     */
     WowSrp6Server() {}
 
     static final WowSrp6Server init(SRP6GroupParameters params, BigInteger v, byte[] I, byte[] s, Digest digest,

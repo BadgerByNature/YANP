@@ -35,14 +35,12 @@ import com.woodlands.yanp.common.BitUtil
 import com.woodlands.yanp.common.data.PacketDataWriter
 import com.woodlands.yanp.common.network.ByteBufWowPacket
 import com.woodlands.yanp.common.srp.WowSrp6Server
-
 import groovy.util.logging.Slf4j
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
 import org.bouncycastle.crypto.digests.SHA1Digest
 import org.bouncycastle.crypto.params.SRP6GroupParameters
 import org.springframework.stereotype.Service
-import org.springframework.util.StringUtils
 
 import java.security.SecureRandom
 

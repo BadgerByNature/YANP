@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2026-03-08
+* Updated packet size-handling for challenges to be properly dynamic
+* Added connection idle timeout during Auth 
+* Added TOTP Authenticator support!
+* Added cache for realm list with configurable interval
+
 ## 2026-03-01
 * Added verification of build hash from client vs expected build hash on server
 

@@ -96,9 +96,9 @@ class AuthServer {
                         // An anonymous ChannelListener should be enough for our needs
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
+                            // Anything that holds state cannot be @Shared - that includes decoders and our idle handler(s)
                             ch.pipeline().addFirst("defaultIdleStateHandler",
                                     new IdleStateHandler(0, 0, IDLE_DISCONNECT_SECONDS))
-                            // Decoder cannot be set to @Shared, but the ChannelInboundHandler and Encoder can be
                             ch.pipeline().addLast("decoder", new AuthByteToMessageDecoderService(authCommandDecoders))
                             ch.pipeline().addLast(authChannelInboundHandler)
                             ch.pipeline().addLast(new AuthChannelIdleHandler())

@@ -22,10 +22,10 @@ import com.woodlands.yanp.auth.AuthAttributeKey
 import com.woodlands.yanp.auth.AuthCommand
 import com.woodlands.yanp.auth.db.entity.RealmEntity
 import com.woodlands.yanp.auth.db.repository.RealmCharactersRepository
-import com.woodlands.yanp.auth.db.repository.RealmRepository
 import com.woodlands.yanp.auth.message.AuthMessage
 import com.woodlands.yanp.auth.message.RealmListMessage
 import com.woodlands.yanp.auth.model.BuildInfo
+import com.woodlands.yanp.auth.service.RealmListCache
 import com.woodlands.yanp.common.data.PacketDataWriter
 import com.woodlands.yanp.common.network.ByteBufWowPacket
 import groovy.util.logging.Slf4j
@@ -40,11 +40,12 @@ class RealmListMessageHandler implements AuthMessageHandler {
     final static int MAX_REALM_ZONES = 38 // Max timezone value for a realm in WotLK
 
     final RealmCharactersRepository realmCharactersRepository
-    final RealmRepository realmRepository
+    final RealmListCache realmListCache
 
-    RealmListMessageHandler(RealmCharactersRepository realmCharactersRepository, RealmRepository realmRepository) {
+    RealmListMessageHandler(RealmCharactersRepository realmCharactersRepository,
+                            RealmListCache realmListCache) {
         this.realmCharactersRepository = realmCharactersRepository
-        this.realmRepository = realmRepository
+        this.realmListCache = realmListCache
     }
 
     @Override
@@ -58,8 +59,7 @@ class RealmListMessageHandler implements AuthMessageHandler {
 
         // Get the character counts for all realms up front instead of opening a query for each realm individually
         def realmCharacters = realmCharactersRepository.findByAccountId(account.id)
-        // TODO Realm list cache instead of calling the table on every access
-        def realms = realmRepository.findAll()
+        def realms = realmListCache.cache.get(RealmListCache.REALM_LIST)
 
         def realmInfosWriter = new PacketDataWriter()
         for (RealmEntity realm : realms) {

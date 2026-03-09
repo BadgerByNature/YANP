@@ -85,7 +85,7 @@ class ReconnectRequestChallengeMessageHandler implements AuthMessageHandler {
 
         String remoteIp = ch.remoteAddress().toString().replace('/', '').split(':')[0]
         if (banService.isIpBanned(remoteIp)) {
-            log.debug("Remote IP attempted to connect but is BANNED") // TODO Log Remote Ip on release
+            log.info("Remote IP attempted to connect but is BANNED: remoteAddress=${ch.remoteAddress().toString()}")
             payload.write(AuthResult.WOW_FAIL_FAIL_NO_ACCESS.code)
             return
         }

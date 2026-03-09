@@ -18,6 +18,7 @@
 package com.woodlands.yanp.auth.db.entity
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import groovy.transform.EqualsAndHashCode
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -25,6 +26,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 
+@EqualsAndHashCode
 @Entity
 @Table(name = "realmlist", catalog = 'tbcrealmd')
 class RealmEntity {
@@ -75,26 +77,4 @@ class RealmEntity {
     @JsonProperty
     @Column(name = "REALMBUILDS", length = 64, nullable = false)
     String realmBuilds
-
-    @Override
-    int hashCode() {
-        return Objects.hash(this.id, this.name)
-    }
-
-    @Override
-    boolean equals(final Object obj) {
-
-        if (this == obj) {
-            return true
-        }
-        if (obj == null) {
-            return false
-        }
-        if (getClass() != obj.getClass()) {
-            return false
-        }
-        final RealmEntity other = (RealmEntity) obj
-        return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name)
-    }
-
 }

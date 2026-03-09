@@ -42,9 +42,8 @@ import java.security.SecureRandom
  * */
 class WowSrp6Server extends SRP6Server {
 
-    // TODO Remove this once we have a fully working implementation
     /** For testing/troubleshooting purposes when we need a KNOWN "random" to reproduce expected results */
-    static BigInteger TEST_B = null //new BigInteger("fc009cec3a0c60324f1ed1f37916fb4ad36571", 16)
+    static BigInteger TEST_B = null
 
     byte[] I // Account name as byte array
     byte[] salt // Salt

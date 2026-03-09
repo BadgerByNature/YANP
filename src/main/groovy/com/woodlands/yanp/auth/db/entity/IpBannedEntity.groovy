@@ -17,12 +17,15 @@
 */
 package com.woodlands.yanp.auth.db.entity
 
+import groovy.transform.EqualsAndHashCode
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
+import jakarta.persistence.IdClass
 import jakarta.persistence.Table
 
 @Entity
+@IdClass(IpBannedIdClass)
 @Table(name = 'ip_banned', catalog = 'tbcrealmd')
 class IpBannedEntity {
 
@@ -30,6 +33,7 @@ class IpBannedEntity {
     @Column(name = 'ip', nullable = false)
     String ipAddress
 
+    @Id
     @Column(name = 'banned_at', nullable = false)
     Long bannedAt
 
@@ -41,4 +45,12 @@ class IpBannedEntity {
 
     @Column(name = 'reason')
     String reason
+}
+
+// This uses a composite key of ip and banned_at. My only guess as to why is that we want to keep
+// a history of previous bans for an IP
+@EqualsAndHashCode
+class IpBannedIdClass implements Serializable {
+    String ipAddress
+    Long bannedAt
 }

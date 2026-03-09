@@ -24,7 +24,6 @@ import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 
 @Repository
-// TODO This should actually be a composite primary key of `ip` and `banned_at` for some reason (in CMangos) - for now let's just pretend ip is the single primary key column
 interface IpBannedRepository extends JpaRepository<IpBannedEntity, String> {
 
     @Query('SELECT ban FROM IpBannedEntity ban WHERE (ban.expiresAt = ban.bannedAt OR ban.expiresAt > :now) AND ban.ipAddress = :ip')

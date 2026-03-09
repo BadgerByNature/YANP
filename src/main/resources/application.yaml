@@ -14,7 +14,7 @@ auth:
 io:
   netty:
     leakDetection:
-      level: paranoid # TODO Turn this back down to advanced or simple after some testing
+      level: simple
 logging:
   level:
     com.woodlands.yanp: INFO

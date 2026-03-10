@@ -29,7 +29,8 @@ import com.woodlands.yanp.auth.constant.SecurityFlag
 import com.woodlands.yanp.auth.message.AuthMessage
 import com.woodlands.yanp.auth.message.LoginProofMessage
 import com.woodlands.yanp.auth.model.BuildInfo
-import com.woodlands.yanp.auth.service.AccountService
+import com.woodlands.yanp.common.db.entity.LoginSource
+import com.woodlands.yanp.common.service.AccountService
 import com.woodlands.yanp.auth.service.AuthenticatorService
 import com.woodlands.yanp.auth.service.VersionVerificationService
 import com.woodlands.yanp.common.BitUtil
@@ -39,6 +40,7 @@ import groovy.util.logging.Slf4j
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
 import org.bouncycastle.util.BigIntegers
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Slf4j
@@ -49,10 +51,15 @@ class LoginProofMessageHandler implements AuthMessageHandler {
     final AuthenticatorService authenticatorService
     final VersionVerificationService versionVerificationService
 
-    LoginProofMessageHandler(AccountService accountService, AuthenticatorService authenticatorService, VersionVerificationService versionVerificationService) {
+    final boolean recordLogin
+
+    LoginProofMessageHandler(AccountService accountService, AuthenticatorService authenticatorService,
+                             VersionVerificationService versionVerificationService, @Value('${auth.recordLogin}') boolean recordLogin) {
         this.accountService = accountService
         this.authenticatorService = authenticatorService
         this.versionVerificationService = versionVerificationService
+
+        this.recordLogin = recordLogin
     }
 
     @Override
@@ -121,12 +128,16 @@ class LoginProofMessageHandler implements AuthMessageHandler {
             return
         }
 
-        // TODO Insert into account_logons table on success
-
         BigInteger M2 = srpServer.calculateServerEvidenceMessage()
 
+        // Update the sessionKey into the account table - the game server uses it to verify the client connection
         account.sessionKey = BigIntegers.asUnsignedByteArray(K).encodeHex().toString()
-        accountService.save(account) // Update the sessionKey into the account table - the game server uses it to verify the client connection
+        account.failedLogins = 0 // Also clear failedLogins
+        accountService.save(account)
+        if (recordLogin) {
+            String remoteIp = channel.remoteAddress().toString().replace('/', '').split(':')[0]
+            accountService.saveLogin(account, remoteIp, LoginSource.AUTH)
+        }
 
         channel.attr(AuthAttributeKey.STATUS).set(AuthStatus.AUTHED)
 

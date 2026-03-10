@@ -17,9 +17,9 @@
 */
 package com.woodlands.yanp.web.controller
 
-import com.woodlands.yanp.auth.db.entity.AccountEntity
+import com.woodlands.yanp.common.db.entity.AccountEntity
 import com.woodlands.yanp.auth.db.entity.RealmEntity
-import com.woodlands.yanp.auth.db.repository.AccountRepository
+import com.woodlands.yanp.common.db.repository.AccountRepository
 import com.woodlands.yanp.auth.db.repository.RealmRepository
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable

@@ -18,7 +18,7 @@
 package com.woodlands.yanp.auth
 
 import com.woodlands.yanp.auth.constant.AuthStatus
-import com.woodlands.yanp.auth.db.entity.AccountEntity
+import com.woodlands.yanp.common.db.entity.AccountEntity
 import com.woodlands.yanp.common.srp.WowSrp6Server
 import io.netty.util.AttributeKey
 

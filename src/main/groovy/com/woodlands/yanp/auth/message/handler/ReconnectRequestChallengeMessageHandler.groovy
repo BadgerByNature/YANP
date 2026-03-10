@@ -24,7 +24,7 @@ import com.woodlands.yanp.auth.constant.AuthStatus
 import com.woodlands.yanp.auth.constant.BanStatus
 import com.woodlands.yanp.auth.message.AuthMessage
 import com.woodlands.yanp.auth.message.RequestChallengeMessage
-import com.woodlands.yanp.auth.service.AccountService
+import com.woodlands.yanp.common.service.AccountService
 import com.woodlands.yanp.auth.service.BanService
 import com.woodlands.yanp.common.BitUtil
 import com.woodlands.yanp.common.data.PacketDataWriter

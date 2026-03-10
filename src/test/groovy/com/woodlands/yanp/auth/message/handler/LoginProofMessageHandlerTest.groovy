@@ -20,10 +20,10 @@ package com.woodlands.yanp.auth.message.handler
 
 import com.woodlands.yanp.auth.AuthAttributeKey
 import com.woodlands.yanp.auth.constant.AuthStatus
-import com.woodlands.yanp.auth.db.entity.AccountEntity
+import com.woodlands.yanp.common.db.entity.AccountEntity
 import com.woodlands.yanp.auth.message.LoginProofMessage
 import com.woodlands.yanp.auth.model.BuildInfo
-import com.woodlands.yanp.auth.service.AccountService
+import com.woodlands.yanp.common.service.AccountService
 import com.woodlands.yanp.auth.service.AuthenticatorService
 import com.woodlands.yanp.auth.service.VersionVerificationService
 import com.woodlands.yanp.common.srp.WowSrp6Server

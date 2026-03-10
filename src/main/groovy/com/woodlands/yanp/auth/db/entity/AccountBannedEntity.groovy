@@ -29,7 +29,7 @@ import jakarta.persistence.Table
 class AccountBannedEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = 'id', nullable = false)
     Integer id
 

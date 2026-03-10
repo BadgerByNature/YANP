@@ -34,7 +34,7 @@ class RealmEntity {
     @JsonProperty
     @Id
     @Column(name = "ID", nullable = false)
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id
 
     /** The realm name. Max 32 characters */

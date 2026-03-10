@@ -10,6 +10,7 @@ spring:
 auth:
   port: 3724
   strictVersionCheck: true
+  recordLogin: true
   realmsUpdateIntervalSeconds: 30
 io:
   netty:

@@ -18,23 +18,40 @@
 package com.woodlands.yanp.common.service
 
 import com.woodlands.yanp.common.db.entity.AccountEntity
+import com.woodlands.yanp.common.db.entity.AccountLoginsEntity
+import com.woodlands.yanp.common.db.entity.LoginSource
+import com.woodlands.yanp.common.db.repository.AccountLoginsRepository
 import com.woodlands.yanp.common.db.repository.AccountRepository
 import org.springframework.stereotype.Service
+
+import java.time.LocalDateTime
 
 @Service
 class AccountService {
 
-    final AccountRepository repository
+    final AccountRepository accountRepository
+    final AccountLoginsRepository loginsRepository
 
-    AccountService(AccountRepository repository) {
-        this.repository = repository
+    AccountService(AccountRepository accountRepository, AccountLoginsRepository loginsRepository) {
+        this.accountRepository = accountRepository
+        this.loginsRepository = loginsRepository
     }
 
     AccountEntity getAccount(String accountName) {
-        repository.findByUsername(accountName)
+        accountRepository.findByUsername(accountName)
     }
 
     AccountEntity save(AccountEntity entity) {
-        repository.save(entity)
+        accountRepository.save(entity)
+    }
+
+    void saveLogin(AccountEntity account, String ip, LoginSource source) {
+        def login = new AccountLoginsEntity(
+                accountId: account.id,
+                ip: ip,
+                loginTime: LocalDateTime.now(),
+                loginSource: source
+        )
+        loginsRepository.save(login)
     }
 }

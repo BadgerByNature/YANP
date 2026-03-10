@@ -29,6 +29,7 @@ import com.woodlands.yanp.auth.constant.SecurityFlag
 import com.woodlands.yanp.auth.message.AuthMessage
 import com.woodlands.yanp.auth.message.LoginProofMessage
 import com.woodlands.yanp.auth.model.BuildInfo
+import com.woodlands.yanp.common.db.entity.LoginSource
 import com.woodlands.yanp.common.service.AccountService
 import com.woodlands.yanp.auth.service.AuthenticatorService
 import com.woodlands.yanp.auth.service.VersionVerificationService
@@ -39,6 +40,7 @@ import groovy.util.logging.Slf4j
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
 import org.bouncycastle.util.BigIntegers
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Slf4j
@@ -49,10 +51,15 @@ class LoginProofMessageHandler implements AuthMessageHandler {
     final AuthenticatorService authenticatorService
     final VersionVerificationService versionVerificationService
 
-    LoginProofMessageHandler(AccountService accountService, AuthenticatorService authenticatorService, VersionVerificationService versionVerificationService) {
+    final boolean recordLogin
+
+    LoginProofMessageHandler(AccountService accountService, AuthenticatorService authenticatorService,
+                             VersionVerificationService versionVerificationService, @Value('${auth.recordLogin}') boolean recordLogin) {
         this.accountService = accountService
         this.authenticatorService = authenticatorService
         this.versionVerificationService = versionVerificationService
+
+        this.recordLogin = recordLogin
     }
 
     @Override
@@ -127,9 +134,10 @@ class LoginProofMessageHandler implements AuthMessageHandler {
         account.sessionKey = BigIntegers.asUnsignedByteArray(K).encodeHex().toString()
         account.failedLogins = 0 // Also clear failedLogins
         accountService.save(account)
-
-        // TODO Insert into account_logons table on success
-        // Make toggleable, seems like a waste of disk space
+        if (recordLogin) {
+            String remoteIp = channel.remoteAddress().toString().replace('/', '').split(':')[0]
+            accountService.saveLogin(account, remoteIp, LoginSource.AUTH)
+        }
 
         channel.attr(AuthAttributeKey.STATUS).set(AuthStatus.AUTHED)
 

@@ -1,7 +1,6 @@
 plugins {
     id 'groovy'
-    id 'org.springframework.boot' version '4.0.2'
-    id 'io.spring.dependency-management' version '1.1.7'
+    id 'java-library'
 }
 
 group = 'com.yanp'
@@ -22,16 +21,17 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    api platform('org.springframework.boot:spring-boot-dependencies:4.0.3')
+    api 'org.springframework.boot:spring-boot-starter-data-jpa'
 
     implementation 'org.apache.groovy:groovy:5.0.4'
 
-    implementation 'io.netty:netty-all:4.2.10.Final'
-    implementation 'com.github.ben-manes.caffeine:caffeine:3.2.3'
+    api 'io.netty:netty-all:4.2.10.Final'
+    api 'com.github.ben-manes.caffeine:caffeine:3.2.3'
 
     // Use debug version of bouncycastle when needing to debug into the guts
     //implementation 'org.bouncycastle:bcprov-debug-jdk18on:1.83'
-    implementation 'org.bouncycastle:bcprov-jdk18on:1.83'
+    api 'org.bouncycastle:bcprov-jdk18on:1.83'
 
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 

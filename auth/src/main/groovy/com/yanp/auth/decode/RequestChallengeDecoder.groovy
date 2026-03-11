@@ -23,7 +23,7 @@ package com.yanp.auth.decode
 
 import com.yanp.auth.AuthCommandDecoder
 import com.yanp.auth.message.RequestChallengeMessage
-import com.yanp.common.BitUtil
+import com.yanp.shared.BitUtil
 import groovy.util.logging.Slf4j
 import io.netty.buffer.ByteBuf
 

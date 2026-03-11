@@ -25,7 +25,7 @@ import com.yanp.auth.AuthCommand
 import com.yanp.auth.AuthCommandDecoder
 import com.yanp.auth.constant.SecurityFlag
 import com.yanp.auth.message.LoginProofMessage
-import com.yanp.common.BitUtil
+import com.yanp.shared.BitUtil
 import groovy.util.logging.Slf4j
 import io.netty.buffer.ByteBuf
 import org.springframework.stereotype.Service

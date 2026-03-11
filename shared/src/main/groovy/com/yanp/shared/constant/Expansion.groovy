@@ -15,14 +15,25 @@
  * Copyright (c) 2026 YANP: You Are Not Prepared
  * See CONTRIBUTORS.md for further Copyright information
  */
-package com.yanp.common.db.repository
+package com.yanp.shared.constant
 
-import com.yanp.common.db.entity.AccountEntity
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.stereotype.Repository
+import java.util.stream.Stream
 
-@Repository
-interface AccountRepository extends JpaRepository<AccountEntity, Long> {
+enum Expansion {
+    VANILlA(0),
+    TBC(1),
+    WOTLK(2)
 
-    AccountEntity findByUsername(String username)
+    int value
+
+    Expansion(int value) {
+        this.value = value
+    }
+
+    static Expansion fromValue(int value) {
+        Stream.of(values())
+            .filter(e -> e.value == value)
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Invalid Expansion specified: ${value}"))
+    }
 }

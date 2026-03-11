@@ -15,19 +15,13 @@
  * Copyright (c) 2026 YANP: You Are Not Prepared
  * See CONTRIBUTORS.md for further Copyright information
  */
-//file:noinspection GrMethodMayBeStatic
-package com.yanp.common.config
+package com.yanp.shared.db.repository
 
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import com.yanp.shared.db.entity.AccountLoginsEntity
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
 
-import java.time.Clock
+@Repository
+interface AccountLoginsRepository extends JpaRepository<AccountLoginsEntity, Long> {
 
-@Configuration
-class ClockConfig {
-
-    @Bean
-    Clock clock() {
-        Clock.systemUTC()
-    }
 }

@@ -15,28 +15,14 @@
  * Copyright (c) 2026 YANP: You Are Not Prepared
  * See CONTRIBUTORS.md for further Copyright information
  */
-//file:noinspection GrMethodMayBeStatic
-package com.yanp.common.config
+package com.yanp.shared.db.repository
 
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import com.yanp.shared.db.entity.AccountEntity
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
 
-import java.security.SecureRandom
+@Repository
+interface AccountRepository extends JpaRepository<AccountEntity, Long> {
 
-/**
- * Configuration class to create beans of our Random number generators. These
- * classes are intended to be shared throughout the app and are entirely threadsafe.
- */
-@Configuration
-class RandomConfig {
-
-    @Bean
-    SecureRandom secureRandom() {
-        new SecureRandom()
-    }
-
-    @Bean
-    Random random() {
-        new Random()
-    }
+    AccountEntity findByUsername(String username)
 }

@@ -24,7 +24,7 @@ import com.yanp.auth.constant.AuthStatus
 import com.yanp.auth.message.AuthMessage
 import com.yanp.auth.message.ReconnectProofMessage
 import com.yanp.auth.service.VersionVerificationService
-import com.yanp.common.network.ByteBufWowPacket
+import com.yanp.shared.network.ByteBufWowPacket
 import groovy.util.logging.Slf4j
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel

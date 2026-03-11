@@ -15,7 +15,7 @@
  * Copyright (c) 2026 YANP: You Are Not Prepared
  * See CONTRIBUTORS.md for further Copyright information
  */
-package com.yanp.common.db.entity
+package com.yanp.shared.db.entity
 
 import groovy.transform.EqualsAndHashCode
 import jakarta.persistence.Column
@@ -82,7 +82,7 @@ class AccountEntity {
     Long mutedUntil
 
     /** Locale Id.
-     *  @see com.yanp.common.constant.LocalizationId */
+     *  @see com.yanp.shared.constant.LocalizationId */
     @Column(name = 'LOCALE')
     String localeId
 

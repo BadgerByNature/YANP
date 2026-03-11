@@ -21,7 +21,7 @@
  */
 package com.yanp.auth.encode
 
-import com.yanp.common.network.ByteBufWowPacket
+import com.yanp.shared.network.ByteBufWowPacket
 import groovy.util.logging.Slf4j
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandler.Sharable

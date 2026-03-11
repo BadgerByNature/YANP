@@ -1,4 +1,7 @@
 /*
+ * Java World of Warcraft Emulation Project
+ * Copyright (C) 2015-2020 JavaWoW
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -11,29 +14,16 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
+ */
+/*
  * Copyright (c) 2026 YANP: You Are Not Prepared
  * See CONTRIBUTORS.md for further Copyright information
  */
-package com.yanp.common.constant
+package com.yanp.shared.network
 
-import java.util.stream.Stream
+import io.netty.buffer.ByteBuf
 
-enum Expansion {
-    VANILlA(0),
-    TBC(1),
-    WOTLK(2)
-
-    int value
-
-    Expansion(int value) {
-        this.value = value
-    }
-
-    static Expansion fromValue(int value) {
-        Stream.of(values())
-            .filter(e -> e.value == value)
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("Invalid Expansion specified: ${value}"))
-    }
+class ByteBufWowPacket implements WowPacket {
+    int opCode
+    ByteBuf payload
 }

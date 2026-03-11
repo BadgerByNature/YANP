@@ -20,9 +20,9 @@
  * See CONTRIBUTORS.md for further Copyright information
  */
 //file:noinspection GroovyAssignabilityCheck
-package com.yanp.common.srp
+package com.yanp.shared.srp
 
-import com.yanp.common.BitUtil
+import com.yanp.shared.BitUtil
 import org.bouncycastle.crypto.CryptoException
 import org.bouncycastle.crypto.Digest
 import org.bouncycastle.crypto.agreement.srp.SRP6Util

@@ -20,13 +20,13 @@ package com.yanp.auth.message.handler
 
 import com.yanp.auth.AuthAttributeKey
 import com.yanp.auth.constant.AuthStatus
-import com.yanp.common.db.entity.AccountEntity
+import com.yanp.shared.db.entity.AccountEntity
 import com.yanp.auth.message.LoginProofMessage
 import com.yanp.auth.model.BuildInfo
-import com.yanp.common.service.AccountService
+import com.yanp.shared.service.AccountService
 import com.yanp.auth.service.AuthenticatorService
 import com.yanp.auth.service.VersionVerificationService
-import com.yanp.common.srp.WowSrp6Server
+import com.yanp.shared.srp.WowSrp6Server
 import io.netty.channel.Channel
 import io.netty.util.Attribute
 import org.bouncycastle.crypto.digests.SHA1Digest

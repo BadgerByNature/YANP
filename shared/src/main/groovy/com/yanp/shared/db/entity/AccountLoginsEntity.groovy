@@ -15,7 +15,7 @@
  * Copyright (c) 2026 YANP: You Are Not Prepared
  * See CONTRIBUTORS.md for further Copyright information
  */
-package com.yanp.common.db.entity
+package com.yanp.shared.db.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity

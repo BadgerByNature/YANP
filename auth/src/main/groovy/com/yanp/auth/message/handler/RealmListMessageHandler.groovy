@@ -26,8 +26,8 @@ import com.yanp.auth.message.AuthMessage
 import com.yanp.auth.message.RealmListMessage
 import com.yanp.auth.model.BuildInfo
 import com.yanp.auth.service.RealmListCache
-import com.yanp.common.data.PacketDataWriter
-import com.yanp.common.network.ByteBufWowPacket
+import com.yanp.shared.data.PacketDataWriter
+import com.yanp.shared.network.ByteBufWowPacket
 import groovy.util.logging.Slf4j
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel

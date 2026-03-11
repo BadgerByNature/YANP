@@ -15,13 +15,13 @@
  * Copyright (c) 2026 YANP: You Are Not Prepared
  * See CONTRIBUTORS.md for further Copyright information
  */
-package com.yanp.common.service
+package com.yanp.shared.service
 
-import com.yanp.common.db.entity.AccountEntity
-import com.yanp.common.db.entity.AccountLoginsEntity
-import com.yanp.common.db.entity.LoginSource
-import com.yanp.common.db.repository.AccountLoginsRepository
-import com.yanp.common.db.repository.AccountRepository
+import com.yanp.shared.db.entity.AccountEntity
+import com.yanp.shared.db.entity.AccountLoginsEntity
+import com.yanp.shared.db.entity.LoginSource
+import com.yanp.shared.db.repository.AccountLoginsRepository
+import com.yanp.shared.db.repository.AccountRepository
 import org.springframework.stereotype.Service
 
 import java.time.LocalDateTime

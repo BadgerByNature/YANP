@@ -1,7 +1,4 @@
 /*
- * Java World of Warcraft Emulation Project
- * Copyright (C) 2015-2020 JavaWoW
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14,16 +11,32 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-/*
+ *
  * Copyright (c) 2026 YANP: You Are Not Prepared
  * See CONTRIBUTORS.md for further Copyright information
  */
-package com.yanp.common.network
+//file:noinspection GrMethodMayBeStatic
+package com.yanp.shared.config
 
-import io.netty.buffer.ByteBuf
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 
-class ByteBufWowPacket implements WowPacket {
-    int opCode
-    ByteBuf payload
+import java.security.SecureRandom
+
+/**
+ * Configuration class to create beans of our Random number generators. These
+ * classes are intended to be shared throughout the app and are entirely threadsafe.
+ */
+@Configuration
+class RandomConfig {
+
+    @Bean
+    SecureRandom secureRandom() {
+        new SecureRandom()
+    }
+
+    @Bean
+    Random random() {
+        new Random()
+    }
 }

@@ -29,12 +29,12 @@ import com.yanp.auth.constant.BanStatus
 import com.yanp.auth.constant.SecurityFlag
 import com.yanp.auth.message.AuthMessage
 import com.yanp.auth.message.RequestChallengeMessage
-import com.yanp.common.service.AccountService
+import com.yanp.shared.service.AccountService
 import com.yanp.auth.service.BanService
-import com.yanp.common.BitUtil
-import com.yanp.common.data.PacketDataWriter
-import com.yanp.common.network.ByteBufWowPacket
-import com.yanp.common.srp.WowSrp6Server
+import com.yanp.shared.BitUtil
+import com.yanp.shared.data.PacketDataWriter
+import com.yanp.shared.network.ByteBufWowPacket
+import com.yanp.shared.srp.WowSrp6Server
 import groovy.util.logging.Slf4j
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel

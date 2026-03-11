@@ -1,7 +1,4 @@
 /*
- * Java World of Warcraft Emulation Project
- * Copyright (C) 2015-2020 JavaWoW
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14,18 +11,38 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-/*
+ *
  * Copyright (c) 2026 YANP: You Are Not Prepared
  * See CONTRIBUTORS.md for further Copyright information
  */
-package com.yanp.common.network
+package com.yanp.shared.constant
 
-import io.netty.buffer.ByteBuf
+import java.util.stream.Stream
 
-interface WowPacket {
+/**
+ * Names for localization Ids.
+ */
+enum LocalizationId {
+    ENGLISH(0),
+    KOREAN(1),
+    FRENCH(2),
+    GERMAN(3),
+    CHINESE(4),
+    TAIWANESE(5),
+    SPANISH_CASTILIAN(6),
+    SPANISH_LATIN(7),
+    RUSSIAN(8)
 
-    int getOpCode()
+    int id
 
-    ByteBuf getPayload()
+    LocalizationId(int id) {
+        this.id = id
+    }
+
+    static LocalizationId fromId(int id) {
+        Stream.of(values())
+            .filter(l -> l.id == id)
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Invalid LocalizationId specified: ${id}"))
+    }
 }

@@ -18,8 +18,8 @@
 package com.yanp.auth
 
 import com.yanp.auth.constant.AuthStatus
-import com.yanp.common.db.entity.AccountEntity
-import com.yanp.common.srp.WowSrp6Server
+import com.yanp.shared.db.entity.AccountEntity
+import com.yanp.shared.srp.WowSrp6Server
 import io.netty.util.AttributeKey
 
 class AuthAttributeKey {

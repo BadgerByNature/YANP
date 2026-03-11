@@ -15,7 +15,7 @@
 * Copyright (c) 2026 YANP: You Are Not Prepared
 * See CONTRIBUTORS.md for further Copyright information
 */
-package com.yanp.common.data
+package com.yanp.shared.data
 
 import spock.lang.Specification
 

@@ -19,7 +19,7 @@
  * Copyright (c) 2026 YANP: You Are Not Prepared
  * See CONTRIBUTORS.md for further Copyright information
  */
-package com.yanp.common
+package com.yanp.shared
 
 import io.netty.buffer.ByteBuf
 

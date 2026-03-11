@@ -15,7 +15,7 @@
  * Copyright (c) 2026 YANP: You Are Not Prepared
  * See CONTRIBUTORS.md for further Copyright information
  */
-package com.woodlands.yanp.auth.service
+package com.yanp.auth.service
 
 import spock.lang.Specification
 import spock.lang.Unroll

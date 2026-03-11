@@ -16,17 +16,17 @@
  * See CONTRIBUTORS.md for further Copyright information
  */
 //file:noinspection GroovyAssignabilityCheck
-package com.woodlands.yanp.auth.message.handler
+package com.yanp.auth.message.handler
 
-import com.woodlands.yanp.auth.AuthAttributeKey
-import com.woodlands.yanp.auth.constant.AuthStatus
-import com.woodlands.yanp.common.db.entity.AccountEntity
-import com.woodlands.yanp.auth.message.LoginProofMessage
-import com.woodlands.yanp.auth.model.BuildInfo
-import com.woodlands.yanp.common.service.AccountService
-import com.woodlands.yanp.auth.service.AuthenticatorService
-import com.woodlands.yanp.auth.service.VersionVerificationService
-import com.woodlands.yanp.common.srp.WowSrp6Server
+import com.yanp.auth.AuthAttributeKey
+import com.yanp.auth.constant.AuthStatus
+import com.yanp.common.db.entity.AccountEntity
+import com.yanp.auth.message.LoginProofMessage
+import com.yanp.auth.model.BuildInfo
+import com.yanp.common.service.AccountService
+import com.yanp.auth.service.AuthenticatorService
+import com.yanp.auth.service.VersionVerificationService
+import com.yanp.common.srp.WowSrp6Server
 import io.netty.channel.Channel
 import io.netty.util.Attribute
 import org.bouncycastle.crypto.digests.SHA1Digest
@@ -53,7 +53,7 @@ class LoginProofMessageHandlerTest extends Specification {
     LoginProofMessageHandler systemUnderTest
 
     void setup() {
-        systemUnderTest = new LoginProofMessageHandler(mockAccountService, mockAuthenticatorService, mockVersionVerificationService)
+        systemUnderTest = new LoginProofMessageHandler(mockAccountService, mockAuthenticatorService, mockVersionVerificationService, false)
     }
 
     def "Proof calculation matches CMangos implementation"() {

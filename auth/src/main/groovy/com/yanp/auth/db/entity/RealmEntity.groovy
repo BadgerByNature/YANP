@@ -17,7 +17,6 @@
  */
 package com.yanp.auth.db.entity
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import groovy.transform.EqualsAndHashCode
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -31,14 +30,12 @@ import jakarta.persistence.Table
 @Table(name = "realmlist", catalog = 'tbcrealmd')
 class RealmEntity {
 
-    @JsonProperty
     @Id
     @Column(name = "ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id
 
     /** The realm name. Max 32 characters */
-    @JsonProperty
     @Column(name = "NAME", length = 32, nullable = false)
     String name
 
@@ -55,12 +52,10 @@ class RealmEntity {
     Integer icon
 
     /** The realmflags. */
-    @JsonProperty
     @Column(name = "REALMFLAGS")
     Integer realmFlags
 
     /** The timezone. */
-    @JsonProperty
     @Column(name = "TIMEZONE")
     Integer timezone
 
@@ -69,12 +64,10 @@ class RealmEntity {
     Integer allowedSecurityLevel
 
     /** The population. */
-    @JsonProperty
     @Column(name = "POPULATION")
     Float population
 
     /** The realmbuilds. */
-    @JsonProperty
     @Column(name = "REALMBUILDS", length = 64, nullable = false)
     String realmBuilds
 }

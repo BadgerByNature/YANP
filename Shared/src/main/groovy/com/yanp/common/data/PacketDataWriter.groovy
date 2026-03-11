@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*
-* Copyright (c) 2026 YANP: You Are Not Prepared
-* See CONTRIBUTORS.md for further Copyright information
-*/
-package com.woodlands.yanp.common.data
+ * Copyright (c) 2026 YANP: You Are Not Prepared
+ * See CONTRIBUTORS.md for further Copyright information
+ */
+package com.yanp.common.data
 
 import java.nio.charset.Charset
 

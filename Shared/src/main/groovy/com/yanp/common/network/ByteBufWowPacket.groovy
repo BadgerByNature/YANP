@@ -16,16 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*
-* Copyright (c) 2026 YANP: You Are Not Prepared
-* See CONTRIBUTORS.md for further Copyright information
-*/
-package com.woodlands.yanp.common.network
+ * Copyright (c) 2026 YANP: You Are Not Prepared
+ * See CONTRIBUTORS.md for further Copyright information
+ */
+package com.yanp.common.network
 
 import io.netty.buffer.ByteBuf
 
-interface WowPacket {
-
-    int getOpCode()
-
-    ByteBuf getPayload()
+class ByteBufWowPacket implements WowPacket {
+    int opCode
+    ByteBuf payload
 }

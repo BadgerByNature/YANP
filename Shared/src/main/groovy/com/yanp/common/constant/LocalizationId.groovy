@@ -15,40 +15,34 @@
  * Copyright (c) 2026 YANP: You Are Not Prepared
  * See CONTRIBUTORS.md for further Copyright information
  */
-package com.woodlands.yanp.common.db.entity
+package com.yanp.common.constant
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import java.util.stream.Stream
 
-import java.time.LocalDateTime
+/**
+ * Names for localization Ids.
+ */
+enum LocalizationId {
+    ENGLISH(0),
+    KOREAN(1),
+    FRENCH(2),
+    GERMAN(3),
+    CHINESE(4),
+    TAIWANESE(5),
+    SPANISH_CASTILIAN(6),
+    SPANISH_LATIN(7),
+    RUSSIAN(8)
 
-@Entity
-@Table(name = 'account_logons', catalog = 'tbcrealmd')
-class AccountLoginsEntity {
+    int id
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = 'id')
-    Long id
+    LocalizationId(int id) {
+        this.id = id
+    }
 
-    @Column(name = 'accountid')
-    Integer accountId
-
-    @Column(name = 'ip')
-    String ip
-
-    @Column(name = 'logintime')
-    LocalDateTime loginTime
-
-    @Column(name = 'loginsource')
-    LoginSource loginSource
-}
-
-enum LoginSource {
-    AUTH,
-    WORLD
+    static LocalizationId fromId(int id) {
+        Stream.of(values())
+            .filter(l -> l.id == id)
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Invalid LocalizationId specified: ${id}"))
+    }
 }

@@ -1,4 +1,7 @@
 /*
+ * Java World of Warcraft Emulation Project
+ * Copyright (C) 2015-2020 JavaWoW
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -11,18 +14,18 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
+ */
+/*
  * Copyright (c) 2026 YANP: You Are Not Prepared
  * See CONTRIBUTORS.md for further Copyright information
  */
-package com.woodlands.yanp.common.db.repository
+package com.yanp.common.network
 
-import com.woodlands.yanp.common.db.entity.AccountEntity
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.stereotype.Repository
+import io.netty.buffer.ByteBuf
 
-@Repository
-interface AccountRepository extends JpaRepository<AccountEntity, Long> {
+interface WowPacket {
 
-    AccountEntity findByUsername(String username)
+    int getOpCode()
+
+    ByteBuf getPayload()
 }

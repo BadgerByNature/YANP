@@ -15,9 +15,9 @@
  * Copyright (c) 2026 YANP: You Are Not Prepared
  * See CONTRIBUTORS.md for further Copyright information
  */
-package com.woodlands.yanp.common.db.entity
+package com.yanp.common.db.entity
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import groovy.transform.EqualsAndHashCode
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -28,21 +28,19 @@ import jakarta.persistence.Table
 import java.time.LocalDateTime
 
 @Entity
+@EqualsAndHashCode
 @Table(name = 'account', catalog = 'tbcrealmd')
 class AccountEntity {
 
-    @JsonProperty
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = 'ID', nullable = false)
     Integer id
 
-    @JsonProperty
     @Column(name = 'USERNAME', length = 32, unique = true)
     String username
 
     /** Access level of account 0 = regular user, > 0 = GM. */
-    @JsonProperty
     @Column(name = 'GMLEVEL')
     Integer gmLevel
 
@@ -58,11 +56,9 @@ class AccountEntity {
     @Column(name = 'S', nullable = false)
     String s
 
-    @JsonProperty
     @Column(name = 'EMAIL')
     String email
 
-    @JsonProperty
     @Column(name = 'JOINDATE')
     LocalDateTime joinDate
 
@@ -78,7 +74,6 @@ class AccountEntity {
     @Column(name = 'ACTIVE_REALM_ID')
     Long activeRealmId
 
-    @JsonProperty
     @Column(name = 'EXPANSION')
     Integer expansion
 
@@ -87,8 +82,7 @@ class AccountEntity {
     Long mutedUntil
 
     /** Locale Id.
-     *  @see com.woodlands.yanp.common.constant.LocalizationId */
-    @JsonProperty
+     *  @see com.yanp.common.constant.LocalizationId */
     @Column(name = 'LOCALE')
     String localeId
 
@@ -106,25 +100,4 @@ class AccountEntity {
 
     @Column(name = 'flags')
     Integer flags
-
-    @Override
-    int hashCode() {
-        return Objects.hash(this.id, this.username)
-    }
-
-    @Override
-    boolean equals(final Object obj) {
-
-        if (this == obj) {
-            return true
-        }
-        if (obj == null) {
-            return false
-        }
-        if (getClass() != obj.getClass()) {
-            return false
-        }
-        final AccountEntity other = (AccountEntity) obj
-        return Objects.equals(this.id, other.id) && Objects.equals(this.username, other.username)
-    }
 }

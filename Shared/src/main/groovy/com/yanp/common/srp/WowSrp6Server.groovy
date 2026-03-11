@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*
-* Copyright (c) 2026 YANP: You Are Not Prepared
-* See CONTRIBUTORS.md for further Copyright information
-*/
+ * Copyright (c) 2026 YANP: You Are Not Prepared
+ * See CONTRIBUTORS.md for further Copyright information
+ */
 //file:noinspection ChangeToOperator
-package com.woodlands.yanp.common.srp
+package com.yanp.common.srp
 
-import com.woodlands.yanp.common.BitUtil
+import com.yanp.common.BitUtil
 import org.bouncycastle.crypto.CryptoException
 import org.bouncycastle.crypto.Digest
 import org.bouncycastle.crypto.agreement.srp.SRP6Server

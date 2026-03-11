@@ -15,19 +15,40 @@
  * Copyright (c) 2026 YANP: You Are Not Prepared
  * See CONTRIBUTORS.md for further Copyright information
  */
-//file:noinspection GrMethodMayBeStatic
-package com.woodlands.yanp.common.config
+package com.yanp.common.db.entity
 
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 
-import java.time.Clock
+import java.time.LocalDateTime
 
-@Configuration
-class ClockConfig {
+@Entity
+@Table(name = 'account_logons', catalog = 'tbcrealmd')
+class AccountLoginsEntity {
 
-    @Bean
-    Clock clock() {
-        Clock.systemUTC()
-    }
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = 'id')
+    Long id
+
+    @Column(name = 'accountid')
+    Integer accountId
+
+    @Column(name = 'ip')
+    String ip
+
+    @Column(name = 'logintime')
+    LocalDateTime loginTime
+
+    @Column(name = 'loginsource')
+    LoginSource loginSource
+}
+
+enum LoginSource {
+    AUTH,
+    WORLD
 }

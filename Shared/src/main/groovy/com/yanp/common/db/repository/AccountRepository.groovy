@@ -15,13 +15,14 @@
  * Copyright (c) 2026 YANP: You Are Not Prepared
  * See CONTRIBUTORS.md for further Copyright information
  */
-package com.woodlands.yanp.common.db.repository
+package com.yanp.common.db.repository
 
-import com.woodlands.yanp.common.db.entity.AccountLoginsEntity
+import com.yanp.common.db.entity.AccountEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface AccountLoginsRepository extends JpaRepository<AccountLoginsEntity, Long> {
+interface AccountRepository extends JpaRepository<AccountEntity, Long> {
 
+    AccountEntity findByUsername(String username)
 }

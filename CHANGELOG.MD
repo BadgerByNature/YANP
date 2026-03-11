@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2026-03-11
+* Created multi-project gradle build to split up Shard and Auth. Eventually Shared will be used for more
+  * This could be done a lot better with better dependency management, it's just a pain and I'm learning it as I go
+
 ## 2026-03-08
 * Updated packet size-handling for challenges to be properly dynamic
 * Added connection idle timeout during Auth 

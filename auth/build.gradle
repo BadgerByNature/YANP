@@ -1,0 +1,55 @@
+plugins {
+    id 'groovy'
+    id 'org.springframework.boot' version '4.0.3'
+    id 'application'
+}
+
+group = 'com.yanp'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+//noinspection GrUnresolvedAccess
+application {
+    mainClass = 'com.yanp.AuthApp'
+}
+
+dependencies {
+    implementation project(':Shared')
+
+    implementation platform('org.springframework.boot:spring-boot-dependencies:4.0.3')
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    implementation 'org.apache.groovy:groovy:5.0.4'
+
+    implementation 'io.netty:netty-all:4.2.10.Final'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.2.3'
+
+    // Use debug version of bouncycastle when needing to debug into the guts
+    //implementation 'org.bouncycastle:bcprov-debug-jdk18on:1.83'
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.83'
+
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.spockframework:spock-core:2.4-groovy-5.0'
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "failed"
+    }
+}

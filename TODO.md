@@ -1,4 +1,7 @@
 # TODO
 This file is for TODO tracking inside the code-base, avoiding a public Trello or Jira board
 
-* Refactor entire project into multi-module in prep for Game Server. Common/Auth/Game/Other - account management? Website? API?
+* Get the gradle build producing a JAR file that can be run
+* Externalize properties in application.yml so they can be modified by a user without recompiling
+* Write a bunch of unit tests
+* Get a github build working

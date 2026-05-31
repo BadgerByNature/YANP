@@ -177,9 +177,9 @@ class BitUtil {
             newLength -= 1
             ignoreMSB = true
         }
-        newLength = Math.max(newLength, minSize) // if minSize > length, set length = minSize
-        byte[] ret = new byte[newLength]
-        System.arraycopy(b, (ignoreMSB ? 1 : 0), ret, 0, newLength)
+        newLength = Math.min(newLength, minSize) // Don't try to copy more bytes than we have
+        byte[] ret = new byte[minSize]
+        System.arraycopy(b, (ignoreMSB ? 1 : 0), ret, minSize - newLength, newLength)
         return ret
     }
 

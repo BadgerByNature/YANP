@@ -98,7 +98,7 @@ class LoginProofMessageHandler implements AuthMessageHandler {
         BuildInfo buildInfo = BuildInfo.BUILDS.get(clientBuild)
         if (!buildInfo) {
             // Client is found to be invalid via the build number passed in (8606 = Latest non-classic TBC client)
-            log.error('User tried to login with invalid client')
+            log.error('User tried to login with invalid client: Invalid Build Number')
             payload.write(AuthResult.WOW_FAIL_VERSION_INVALID.code)
             return
         }
@@ -121,9 +121,9 @@ class LoginProofMessageHandler implements AuthMessageHandler {
         }
 
         String os = channel.attr(AuthAttributeKey.OS).get()
-        if (!versionVerificationService.verifyVersion(BitUtil.reverse(BigIntegers.asUnsignedByteArray(message.A)), message.crcHash, clientBuild, os, false)) {
+        if (!versionVerificationService.verifyVersion(BitUtil.reverse(BigIntegers.asUnsignedByteArray(32, message.A)), message.crcHash, clientBuild, os, false)) {
             // Client is found to be invalid via CRC Hash check validation despite claiming a valid build number
-            log.error('User tried to login with invalid client')
+            log.error("User tried to login with invalid client: CRC Hash Failed: A=$message.A, crcHash=$message.crcHash")
             payload.write(AuthResult.WOW_FAIL_VERSION_INVALID.code)
             return
         }
@@ -141,6 +141,7 @@ class LoginProofMessageHandler implements AuthMessageHandler {
 
         channel.attr(AuthAttributeKey.STATUS).set(AuthStatus.AUTHED)
 
+        log.info("Successful login: accountName=$account.username")
         payload.write(AuthResult.WOW_SUCCESS.code)
         def writer = new PacketDataWriter()
         writer.write(BitUtil.toByteArray(M2, 20)) // Evidence message we return so the client knows we're a valid server

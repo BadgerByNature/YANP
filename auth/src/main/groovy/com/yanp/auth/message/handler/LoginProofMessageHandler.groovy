@@ -131,7 +131,7 @@ class LoginProofMessageHandler implements AuthMessageHandler {
         BigInteger M2 = srpServer.calculateServerEvidenceMessage()
 
         // Update the sessionKey into the account table - the game server uses it to verify the client connection
-        account.sessionKey = BigIntegers.asUnsignedByteArray(K).encodeHex().toString()
+        account.sessionKey = BigIntegers.asUnsignedByteArray(40, K).encodeHex().toString()
         account.failedLogins = 0 // Also clear failedLogins
         accountService.save(account)
         if (recordLogin) {

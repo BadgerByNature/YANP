@@ -57,7 +57,7 @@ class WowSrp6Util extends SRP6Util {
     static BigInteger calculateM1(Digest digest, BigInteger N, BigInteger g, byte[] I, byte[] salt, BigInteger A,
                                   BigInteger B, BigInteger Key) {
         int padLength = (N.bitLength() + 7) / 8
-        byte[] N_bytes = BitUtil.reverse(getPadded(N, padLength))
+        byte[] N_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(padLength, N))
         digest.update(N_bytes, 0, N_bytes.length)
         byte[] N_digested = new byte[digest.getDigestSize()] // H( N )
         digest.doFinal(N_digested, 0)
@@ -72,9 +72,9 @@ class WowSrp6Util extends SRP6Util {
         digest.update(I, 0, I.length)
         byte[] I_digested = new byte[digest.getDigestSize()] // H( I )
         digest.doFinal(I_digested, 0)
-        byte[] A_bytes = BitUtil.reverse(getPadded(A, padLength))
-        byte[] B_bytes = BitUtil.reverse(getPadded(B, padLength))
-        byte[] K_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(Key))
+        byte[] A_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(padLength, A))
+        byte[] B_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(padLength, B))
+        byte[] K_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(40, Key))
         // Add in the bytes now
         digest.update(product, 0, product.length) // H( N ) ^ H( g )
         digest.update(I_digested, 0, I_digested.length) // H( I )
@@ -101,9 +101,9 @@ class WowSrp6Util extends SRP6Util {
      */
     static BigInteger calculateM2(Digest digest, BigInteger N, BigInteger A, BigInteger M1, BigInteger Key) {
         int padLength = (N.bitLength() + 7) / 8
-        byte[] A_bytes = BitUtil.reverse(getPadded(A, padLength))
-        byte[] M1_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(M1))
-        byte[] K_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(Key))
+        byte[] A_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(padLength, A))
+        byte[] M1_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(20, M1))
+        byte[] K_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(40, Key))
         digest.update(A_bytes, 0, A_bytes.length) // A
         digest.update(M1_bytes, 0, M1_bytes.length) // M1
         digest.update(K_bytes, 0, K_bytes.length) // K
@@ -149,23 +149,13 @@ class WowSrp6Util extends SRP6Util {
 
     private static BigInteger hashPaddedPair(Digest digest, BigInteger N, BigInteger n1, BigInteger n2) {
         int padLength = (N.bitLength() + 7) / 8
-        byte[] n1_bytes = BitUtil.reverse(getPadded(n1, padLength))
-        byte[] n2_bytes = BitUtil.reverse(getPadded(n2, padLength))
+        byte[] n1_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(padLength, n1))
+        byte[] n2_bytes = BitUtil.reverse(BigIntegers.asUnsignedByteArray(padLength, n2))
         digest.update(n1_bytes, 0, n1_bytes.length)
         digest.update(n2_bytes, 0, n2_bytes.length)
         byte[] output = new byte[digest.getDigestSize()]
         digest.doFinal(output, 0)
         output = BitUtil.reverse(output) // reverse output
         return new BigInteger(1, output)
-    }
-
-    private static byte[] getPadded(BigInteger n, int length) {
-        byte[] bs = BigIntegers.asUnsignedByteArray(n)
-        if (bs.length < length) {
-            byte[] tmp = new byte[length]
-            System.arraycopy(bs, 0, tmp, length - bs.length, bs.length)
-            bs = tmp
-        }
-        return bs
     }
 }

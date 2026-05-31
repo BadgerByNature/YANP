@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 2026-05-30
+* Attempted to hunt down some very occasional login issues caused by bad BigInteger handling. Leading zeroes were being trimmed in some cases where they shouldn't have been. Hopefully this hasn't been over-corrected somehow.
+
 ## 2026-03-11
 * Created multi-project gradle build to split up Shard and Auth. Eventually Shared will be used for more
   * This could be done a lot better with better dependency management, it's just a pain and I'm learning it as I go

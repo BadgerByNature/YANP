@@ -1,6 +1,6 @@
 # A Groovy-based World of Warcraft Login Server
 
-Designed to work with CMaNGOS
+Designed to work with CMaNGOS TBC (https://github.com/cmangos/mangos-tbc)
 
 This started out as a potential WoW Server, but after getting a working Login server I realized
 what a ridiculous amount of work it would be to even begin getting a whole server up and running.

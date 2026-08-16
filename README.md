@@ -12,6 +12,10 @@ I've changed the repo to show that it is
 just a Login Server (Auth Server) before making it publicly available so that anyone curious what
 a Java/Groovy version of the current WoW systems would look like has something to play with. Enjoy!
 
+## How do I read this?
+
+[Basic Workflow](https://github.com/BadgerByNature/YANP/blob/main/HELP.MD)
+
 ### Resources Referenced
 
 * https://github.com/JavaWoW/JavaWoW/
